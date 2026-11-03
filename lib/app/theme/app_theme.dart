@@ -58,17 +58,16 @@ class AppInk extends ThemeExtension<AppInk> {
     Color? inkMuted,
     Color? inkSoft,
     Color? onPrimary,
-  }) =>
-      AppInk(
-        page: page ?? this.page,
-        card: card ?? this.card,
-        tint: tint ?? this.tint,
-        divider: divider ?? this.divider,
-        ink: ink ?? this.ink,
-        inkMuted: inkMuted ?? this.inkMuted,
-        inkSoft: inkSoft ?? this.inkSoft,
-        onPrimary: onPrimary ?? this.onPrimary,
-      );
+  }) => AppInk(
+    page: page ?? this.page,
+    card: card ?? this.card,
+    tint: tint ?? this.tint,
+    divider: divider ?? this.divider,
+    ink: ink ?? this.ink,
+    inkMuted: inkMuted ?? this.inkMuted,
+    inkSoft: inkSoft ?? this.inkSoft,
+    onPrimary: onPrimary ?? this.onPrimary,
+  );
 
   @override
   AppInk lerp(ThemeExtension<AppInk>? other, double t) {
@@ -128,7 +127,11 @@ abstract final class AppTheme {
         fontFamily: AppTypography.fontFamily,
       ),
       iconTheme: IconThemeData(color: ink.ink, size: 24),
-      dividerTheme: DividerThemeData(color: ink.divider, thickness: 1, space: 1),
+      dividerTheme: DividerThemeData(
+        color: ink.divider,
+        thickness: 1,
+        space: 1,
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: ink.page,
         foregroundColor: ink.ink,
@@ -185,9 +188,14 @@ abstract final class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: ink.tint,
-        hintStyle: AppTypography.body(AppTypography.bodyLarge, color: ink.inkSoft),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        hintStyle: AppTypography.body(
+          AppTypography.bodyLarge,
+          color: ink.inkSoft,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: ink.divider),

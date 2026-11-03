@@ -8,21 +8,24 @@ import 'package:mume_music_player/features/home/home_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  testWidgets('home shell renders the five library tabs',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => LibraryStore()),
-        ChangeNotifierProvider(create: (_) => PlayerController()),
-      ],
-      child: MaterialApp(
-        theme: AppTheme.light(),
-        home: MumeScaffold(
-          selectedTab: ShellTab.home,
-          body: const HomeScreen(),
+  testWidgets('home shell renders the five library tabs', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => LibraryStore()),
+          ChangeNotifierProvider(create: (_) => PlayerController()),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: MumeScaffold(
+            selectedTab: ShellTab.home,
+            body: const HomeScreen(),
+          ),
         ),
       ),
-    ));
+    );
 
     expect(find.text('Mume'), findsWidgets);
     for (final tab in ['Suggested', 'Songs', 'Artists', 'Albums', 'Folders']) {

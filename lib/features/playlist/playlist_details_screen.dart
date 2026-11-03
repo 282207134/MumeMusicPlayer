@@ -8,14 +8,15 @@ import '../../app/theme/app_theme.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/widgets/app_logo.dart';
 import '../../app/widgets/buttons.dart';
+import '../../app/widgets/detail_sections.dart';
 import '../../app/widgets/page.dart';
-import '../../app/widgets/sheets.dart';
 import '../../app/widgets/song_option_sheet.dart';
 import '../../app/widgets/tiles.dart';
 import '../../data/library_store.dart';
 import '../../data/models/media.dart';
 import '../../data/music_library.dart';
 import '../../data/player_controller.dart';
+import 'playlists_screen.dart';
 
 /// `27_playlist details` — artwork, the two transport pills and the track list.
 class PlaylistDetailsScreen extends StatelessWidget {
@@ -31,8 +32,9 @@ class PlaylistDetailsScreen extends StatelessWidget {
     final songs = playlist == null
         ? const <Song>[]
         : MusicLibrary.songsByIds(playlist.songIds);
-    final total =
-        Duration(seconds: songs.fold<int>(0, (t, s) => t + s.duration.inSeconds));
+    final total = Duration(
+      seconds: songs.fold<int>(0, (t, s) => t + s.duration.inSeconds),
+    );
 
     return Scaffold(
       appBar: PageTopBar(
@@ -43,37 +45,43 @@ class PlaylistDetailsScreen extends StatelessWidget {
             onPressed: () => Navigator.of(context).pushNamed(Routes.search),
           ),
           const SizedBox(width: Insets.gapSm),
-          OutlinedIconButton(
-            icon: Icons.circle_outlined,
-            tooltip: 'Toggle theme',
-            size: 40,
-            onPressed: () => library.darkMode = !library.darkMode,
+          Builder(
+            builder: (anchor) => OutlinedIconButton(
+              icon: Icons.circle_outlined,
+              tooltip: 'Playlist options',
+              size: 40,
+              onPressed: () => _showOptions(anchor),
+            ),
           ),
         ],
       ),
       body: playlist == null
           ? EmptyState(
               title: 'Playlist unavailable',
-              message:
-                  'This playlist has been deleted. Pick another one from the Playlists board.',
+              message: 'This playlist has been deleted. Pick another one from the Playlists board.',
               icon: Icons.playlist_remove_rounded,
               action: SoftPillButton(
                 label: 'Go to Playlists',
                 icon: Icons.queue_music_rounded,
                 color: context.inkPrimary,
-                onPressed: () => Navigator.of(context)
-                    .pushReplacementNamed(Routes.playlists),
+                onPressed: () =>
+                    Navigator.of(context)
+                        .pushReplacementNamed(Routes.playlists),
               ),
             )
           : ListView(
               padding: const EdgeInsets.fromLTRB(
-                  Insets.page, 0, Insets.page, Insets.gap2xl),
+                Insets.page,
+                0,
+                Insets.page,
+                Insets.gap2xl,
+              ),
               children: [
                 Center(
                   child: CoverArt(
                     asset: playlist.cover,
-                    size: 232,
-                    radius: Insets.radiusXl,
+                    size: Insets.coverDetail,
+                    radius: Insets.radiusDetailCover,
                   ),
                 ),
                 const SizedBox(height: Insets.gapXl),
@@ -82,15 +90,19 @@ class PlaylistDetailsScreen extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
-                  style: AppTypography.heading(AppTypography.h3,
-                      color: context.inkPrimary),
+                  style: AppTypography.heading(
+                    AppTypography.h3,
+                    color: context.inkPrimary,
+                  ),
                 ),
                 const SizedBox(height: Insets.gapSm),
                 Text(
-                  '${songs.length} songs  |  ${formatClock(total)} mins',
+                  '${songs.length} Songs  |  ${formatTotal(total)} mins',
                   textAlign: TextAlign.center,
-                  style: AppTypography.body(AppTypography.bodyLarge,
-                      color: context.inkMuted),
+                  style: AppTypography.body(
+                    AppTypography.bodyLarge,
+                    color: context.inkMuted,
+                  ),
                 ),
                 const SizedBox(height: Insets.gapXl),
                 Row(
@@ -101,7 +113,7 @@ class PlaylistDetailsScreen extends StatelessWidget {
                         icon: Icons.shuffle_rounded,
                         onPressed: songs.isEmpty
                             ? null
-                            : () => _play(context, songs, 0, shuffle: true),
+                            : () => playSongs(context, songs, 0, shuffle: true),
                       ),
                     ),
                     const SizedBox(width: Insets.gapMd),
@@ -112,19 +124,57 @@ class PlaylistDetailsScreen extends StatelessWidget {
                         color: AppColors.primary,
                         onPressed: songs.isEmpty
                             ? null
-                            : () => _play(context, songs, 0),
+                            : () => playSongs(context, songs, 0),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: Insets.gapXl),
                 Divider(color: context.separatorColor),
-                SectionHeader(
-                  title: 'Songs',
-                  actionLabel: 'Add Songs',
-                  onAction: () => _addSongs(context, playlist),
+                Padding(
                   padding: const EdgeInsets.only(
-                      top: Insets.gapLg, bottom: Insets.gapMd),
+                    top: Insets.gapLg,
+                    bottom: Insets.gapMd,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.swap_vert_rounded,
+                        color: AppColors.primary,
+                        size: 22,
+                      ),
+                      const SizedBox(width: Insets.gapSm),
+                      Expanded(
+                        child: Text(
+                          'Date Added',
+                          style: AppTypography.body(
+                            AppTypography.bodyXLarge,
+                            weight: FontWeight.w700,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(Insets.radiusMd),
+                        onTap: () => _addSongs(context, playlist),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            borderRadius: BorderRadius.circular(
+                              Insets.radiusMd,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.add_rounded,
+                            color: AppColors.white,
+                            size: 22,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 if (songs.isEmpty)
                   const EmptyState(
@@ -135,15 +185,14 @@ class PlaylistDetailsScreen extends StatelessWidget {
                   )
                 else
                   for (var i = 0; i < songs.length; i++) ...[
-                    if (i > 0) Divider(color: context.separatorColor),
                     SongTile(
                       song: songs[i],
-                      active: player.current?.id == songs[i].id &&
-                          player.isPlaying,
-                      onTap: () => _play(context, songs, i),
+                      active:
+                          player.current?.id == songs[i].id && player.isPlaying,
+                      onTap: () => playSongs(context, songs, i),
                       onPlay: () => player.current?.id == songs[i].id
                           ? player.toggle()
-                          : _play(context, songs, i),
+                          : playSongs(context, songs, i),
                       onMenu: () => showSongOptions(context, songs[i]),
                     ),
                   ],
@@ -152,82 +201,77 @@ class PlaylistDetailsScreen extends StatelessWidget {
     );
   }
 
-  void _play(
-    BuildContext context,
-    List<Song> songs,
-    int index, {
-    bool shuffle = false,
-  }) {
-    final player = context.read<PlayerController>();
-    if (shuffle && !player.shuffle) player.toggleShuffle();
-    player.playQueue(songs, index);
-    context.read<LibraryStore>().markPlayed(songs[index].id);
-    Navigator.of(context).pushNamed(Routes.player);
-  }
-
-  /// The `+` on `27_playlist details`: a picker of everything not in the board
-  /// yet, since the rest of the app files songs *into* playlists instead.
-  void _addSongs(BuildContext context, Playlist playlist) {
+  /// `28_playlist option menu` — anchored under the header's circle button.
+  Future<void> _showOptions(BuildContext context) async {
     final library = context.read<LibraryStore>();
-    final candidates = MusicLibrary.songs
-        .where((s) => !playlist.songIds.contains(s.id))
-        .toList();
-
-    showMumeSheet(
-      context,
-      builder: (ctx) => MumeSheet(
-        title: 'Add Songs',
-        children: [
-          if (candidates.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: Insets.gapXl),
-              child: Text(
-                'Every song in the library is already in ${playlist.name}.',
-                style: AppTypography.body(AppTypography.bodyLarge,
-                    color: ctx.inkMuted),
-              ),
-            )
-          else
-            for (var i = 0; i < candidates.length; i++) ...[
-              if (i > 0) Divider(color: ctx.separatorColor),
-              InkWell(
-                onTap: () {
-                  Navigator.of(ctx).pop();
-                  final song = candidates[i];
-                  library.addToPlaylist(playlist.id, song.id);
-                  showSnack(context, '${song.title} added to ${playlist.name}');
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Insets.gapMd),
-                  child: Row(
-                    children: [
-                      CoverArt(
-                          asset: candidates[i].cover,
-                          size: Insets.coverTile,
-                          radius: Insets.radiusMd),
-                      const SizedBox(width: Insets.gapLg),
-                      Expanded(
-                        child: Text(
-                          '${candidates[i].title} - ${candidates[i].artist}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.body(
-                            AppTypography.bodyLarge,
-                            weight: FontWeight.w600,
-                            color: ctx.inkPrimary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: Insets.gapMd),
-                      const Icon(Icons.add_rounded,
-                          color: AppColors.primary, size: 24),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-        ],
+    final playlist = library.playlistById(playlistId);
+    final box = context.findRenderObject() as RenderBox?;
+    if (playlist == null || box == null) return;
+    final origin = box.localToGlobal(Offset.zero);
+    final action = await showMenu<String>(
+      context: context,
+      color: context.cardBackground,
+      elevation: 12,
+      constraints: const BoxConstraints.tightFor(width: 200),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Insets.radiusLg),
       ),
+      position: RelativeRect.fromLTRB(
+        origin.dx + box.size.width - 200,
+        origin.dy + box.size.height + Insets.gapMd,
+        origin.dx + box.size.width,
+        origin.dy,
+      ),
+      items: [
+        _option(context, 'edit', Icons.edit_outlined, 'Edit Playlist Info'),
+        const PopupMenuDivider(height: 1),
+        _option(
+          context,
+          'delete',
+          Icons.delete_outline_rounded,
+          'Delete Playlist',
+        ),
+      ],
     );
+    if (!context.mounted) return;
+    switch (action) {
+      case 'edit':
+        Navigator.of(context)
+            .pushNamed(Routes.newPlaylist, arguments: MediaArgs(playlist.id));
+      case 'delete':
+        if (await confirmDeletePlaylist(context, library, playlist) &&
+            context.mounted) {
+          Navigator.of(context).pop();
+        }
+    }
   }
+
+  PopupMenuItem<String> _option(
+    BuildContext context,
+    String value,
+    IconData icon,
+    String label,
+  ) => PopupMenuItem<String>(
+    value: value,
+    padding: const EdgeInsets.symmetric(horizontal: Insets.gapLg),
+    child: Row(
+      children: [
+        Icon(icon, size: 20, color: context.inkPrimary),
+        const SizedBox(width: Insets.gapMd),
+        Text(
+          label,
+          style: AppTypography.body(
+            AppTypography.bodyLarge,
+            weight: FontWeight.w700,
+            color: context.inkPrimary,
+          ),
+        ),
+      ],
+    ),
+  );
+
+  /// `29_add song to playlist` — the board's own picker, opened from `+`.
+  void _addSongs(BuildContext context, Playlist playlist) =>
+      Navigator.of(context)
+          .pushNamed(Routes.addSongs, arguments: MediaArgs(playlist.id));
 }

@@ -51,9 +51,9 @@ class PlaylistsScreen extends StatelessWidget {
           CountSortBar(
             count: MusicLibrary.playlistCountLabel,
             sortLabel: library.playlistSort.label,
-            onSort: () async {
+            onSort: (anchor) async {
               final picked = await showSortMenu<SongSort>(
-                context,
+                anchor,
                 choices: _choices,
                 selected: library.playlistSort,
               );
@@ -62,8 +62,7 @@ class PlaylistsScreen extends StatelessWidget {
           ),
           Divider(color: context.separatorColor),
           InkWell(
-            onTap: () =>
-                Navigator.of(context).pushNamed(Routes.newPlaylist),
+            onTap: () => Navigator.of(context).pushNamed(Routes.newPlaylist),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: Insets.gapMd),
               child: Row(
@@ -79,16 +78,23 @@ class PlaylistsScreen extends StatelessWidget {
                         colors: AppColors.gradientOrange,
                       ),
                     ),
-                    child: const Icon(Icons.add_rounded,
-                        color: AppColors.white, size: 30),
+                    child: const Icon(
+                      Icons.add_rounded,
+                      color: AppColors.white,
+                      size: 30,
+                    ),
                   ),
                   const SizedBox(width: Insets.gapLg),
-                  Text(
-                    'Add New Playlist',
-                    style: AppTypography.body(
-                      AppTypography.bodyXLarge,
-                      weight: FontWeight.w700,
-                      color: context.inkPrimary,
+                  Expanded(
+                    child: Text(
+                      'Add New Playlist',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.body(
+                        AppTypography.bodyXLarge,
+                        weight: FontWeight.w700,
+                        color: context.inkPrimary,
+                      ),
                     ),
                   ),
                 ],
@@ -96,13 +102,13 @@ class PlaylistsScreen extends StatelessWidget {
             ),
           ),
           for (final playlist in playlists) ...[
-            Divider(color: context.separatorColor),
             PlaylistTile(
               title: playlist.name,
               cover: playlist.cover,
               subtitle: '${playlist.songIds.length} songs',
-              onTap: () => Navigator.of(context).pushNamed(
-                  Routes.playlist, arguments: MediaArgs(playlist.id)),
+              onTap: () => Navigator.of(
+                context,
+              ).pushNamed(Routes.playlist, arguments: MediaArgs(playlist.id)),
               onMenu: () => showPlaylistOptions(context, playlist),
             ),
           ],
@@ -113,14 +119,18 @@ class PlaylistsScreen extends StatelessWidget {
 
   static List<Playlist> _sorted(List<Playlist> source, SongSort sort) =>
       switch (sort) {
-        SongSort.recent => [...source]
-            ..sort((a, b) => a.createdOrder.compareTo(b.createdOrder)),
-        SongSort.title || SongSort.ascending => [...source]
-            ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase())),
-        SongSort.descending => [...source]
-            ..sort((a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase())),
-        SongSort.duration => [...source]
-            ..sort((a, b) => b.songIds.length.compareTo(a.songIds.length)),
+        SongSort.recent => [
+          ...source,
+        ]..sort((a, b) => a.createdOrder.compareTo(b.createdOrder)),
+        SongSort.title || SongSort.ascending => [
+          ...source,
+        ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase())),
+        SongSort.descending => [
+          ...source,
+        ]..sort((a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase())),
+        SongSort.duration => [
+          ...source,
+        ]..sort((a, b) => b.songIds.length.compareTo(a.songIds.length)),
       };
 }
 
@@ -144,7 +154,7 @@ void showPlaylistOptions(BuildContext context, Playlist playlist) {
     }
   }
 
-  void forQueue(void Function() action) {
+  void withSongs(void Function() action) {
     if (songs.isEmpty) {
       showSnack(context, '${playlist.name} has no songs yet.');
       return;
@@ -162,7 +172,7 @@ void showPlaylistOptions(BuildContext context, Playlist playlist) {
           label: 'Play Next',
           onTap: () {
             Navigator.of(ctx).pop();
-            forQueue(playNextAll);
+            withSongs(playNextAll);
           },
         ),
         OptionTile(
@@ -170,7 +180,7 @@ void showPlaylistOptions(BuildContext context, Playlist playlist) {
           label: 'Add to Playing Queue',
           onTap: () {
             Navigator.of(ctx).pop();
-            forQueue(enqueueAll);
+            withSongs(enqueueAll);
           },
         ),
         OptionTile(
@@ -178,8 +188,9 @@ void showPlaylistOptions(BuildContext context, Playlist playlist) {
           label: 'Edit',
           onTap: () {
             Navigator.of(ctx).pop();
-            Navigator.of(context).pushNamed(
-                Routes.newPlaylist, arguments: MediaArgs(playlist.id));
+            Navigator.of(
+              context,
+            ).pushNamed(Routes.newPlaylist, arguments: MediaArgs(playlist.id));
           },
         ),
         OptionTile(
@@ -188,7 +199,9 @@ void showPlaylistOptions(BuildContext context, Playlist playlist) {
           onTap: () {
             Navigator.of(ctx).pop();
             showSnack(
-                context, 'Sharing ${playlist.name} is not part of this demo.');
+              context,
+              'Sharing ${playlist.name} is not part of this demo.',
+            );
           },
         ),
         OptionTile(
@@ -197,7 +210,7 @@ void showPlaylistOptions(BuildContext context, Playlist playlist) {
           destructive: true,
           onTap: () {
             Navigator.of(ctx).pop();
-            _confirmDelete(context, library, playlist);
+            confirmDeletePlaylist(context, library, playlist);
           },
         ),
       ],
@@ -205,7 +218,7 @@ void showPlaylistOptions(BuildContext context, Playlist playlist) {
   );
 }
 
-Future<void> _confirmDelete(
+Future<bool> confirmDeletePlaylist(
   BuildContext context,
   LibraryStore library,
   Playlist playlist,
@@ -218,4 +231,5 @@ Future<void> _confirmDelete(
     confirmLabel: 'Delete',
   );
   if (confirmed) library.deletePlaylist(playlist.id);
+  return confirmed;
 }

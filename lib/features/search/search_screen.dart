@@ -7,6 +7,7 @@ import '../../app/theme/app_dimens.dart';
 import '../../app/theme/app_theme.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/widgets/buttons.dart';
+import '../../app/widgets/detail_sections.dart';
 import '../../app/widgets/song_option_sheet.dart';
 import '../../app/widgets/tiles.dart';
 import '../../data/library_store.dart';
@@ -64,7 +65,11 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                  Insets.gapSm, Insets.gapLg, Insets.page, Insets.gapLg),
+                Insets.gapSm,
+                Insets.gapLg,
+                Insets.page,
+                Insets.gapLg,
+              ),
               child: Row(
                 children: [
                   GhostIconButton(
@@ -73,12 +78,14 @@ class _SearchScreenState extends State<SearchScreen> {
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                   const SizedBox(width: Insets.gapMd),
-                  Expanded(child: _SearchField(
-                    controller: _field,
-                    focusNode: _focus,
-                    onClear: () => _field.clear(),
-                    onSubmit: () => library.pushSearch(_query),
-                  )),
+                  Expanded(
+                    child: _SearchField(
+                      controller: _field,
+                      focusNode: _focus,
+                      onClear: () => _field.clear(),
+                      onSubmit: () => library.pushSearch(_query),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -98,7 +105,8 @@ class _SearchScreenState extends State<SearchScreen> {
       return const Expanded(
         child: EmptyState(
           title: 'No recent searches',
-          message: 'Artists and songs you look for are listed here for next time.',
+          message:
+              'Artists and songs you look for are listed here for next time.',
           icon: Icons.history_rounded,
         ),
       );
@@ -122,33 +130,35 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _historyRow(LibraryStore library, String value) => InkWell(
-        onTap: () {
-          _field.text = value;
-          library.pushSearch(value);
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: Insets.gapMd),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  value,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.body(AppTypography.bodyXLarge,
-                      color: context.inkMuted),
-                ),
+    onTap: () {
+      _field.text = value;
+      library.pushSearch(value);
+    },
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: Insets.gapMd),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.body(
+                AppTypography.bodyXLarge,
+                color: context.inkMuted,
               ),
-              GhostIconButton(
-                icon: Icons.close_rounded,
-                size: 22,
-                tooltip: 'Remove',
-                onPressed: () => library.removeSearch(value),
-              ),
-            ],
+            ),
           ),
-        ),
-      );
+          GhostIconButton(
+            icon: Icons.close_rounded,
+            size: 22,
+            tooltip: 'Remove',
+            onPressed: () => library.removeSearch(value),
+          ),
+        ],
+      ),
+    ),
+  );
 
   Widget _results(LibraryStore library, PlayerController player) {
     final q = _query.toLowerCase();
@@ -199,10 +209,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _songResults(List<Song> songs, PlayerController player) {
     if (songs.isEmpty) return _notFound();
-    return ListView.separated(
+    return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: Insets.page),
       itemCount: songs.length,
-      separatorBuilder: (_, _) => Divider(color: context.separatorColor),
       itemBuilder: (context, i) => SongTile(
         song: songs[i],
         active: player.current?.id == songs[i].id && player.isPlaying,
@@ -215,10 +224,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _artistResults(List<Artist> artists) {
     if (artists.isEmpty) return _notFound();
-    return ListView.separated(
+    return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: Insets.page),
       itemCount: artists.length,
-      separatorBuilder: (_, _) => Divider(color: context.separatorColor),
       itemBuilder: (context, i) {
         final artist = artists[i];
         return PlaylistTile(
@@ -236,18 +244,16 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _albumResults(List<Album> albums) {
     if (albums.isEmpty) return _notFound();
-    return ListView.separated(
+    return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: Insets.page),
       itemCount: albums.length,
-      separatorBuilder: (_, _) => Divider(color: context.separatorColor),
       itemBuilder: (context, i) {
         final album = albums[i];
         return PlaylistTile(
           title: album.title,
           cover: album.cover,
           coverSize: Insets.coverTile,
-          subtitle:
-              '${album.artist}  |  ${album.songIds.length} songs',
+          subtitle: '${album.artist}  |  ${album.songIds.length} songs',
           onTap: () => _go(Routes.album, album.id),
         );
       },
@@ -256,10 +262,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _folderResults(List<Folder> folders) {
     if (folders.isEmpty) return _notFound();
-    return ListView.separated(
+    return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: Insets.page),
       itemCount: folders.length,
-      separatorBuilder: (_, _) => Divider(color: context.separatorColor),
       itemBuilder: (context, i) {
         final folder = folders[i];
         return InkWell(
@@ -268,8 +273,11 @@ class _SearchScreenState extends State<SearchScreen> {
             padding: const EdgeInsets.symmetric(vertical: Insets.gapLg),
             child: Row(
               children: [
-                const Icon(Icons.folder_rounded,
-                    size: Insets.coverTile, color: AppColors.primary),
+                const Icon(
+                  Icons.folder_rounded,
+                  size: Insets.coverTile,
+                  color: AppColors.primary,
+                ),
                 const SizedBox(width: Insets.gapLg),
                 Expanded(
                   child: Column(
@@ -277,20 +285,28 @@ class _SearchScreenState extends State<SearchScreen> {
                     children: [
                       Text(
                         folder.name,
-                        style: AppTypography.body(AppTypography.bodyXLarge,
-                            weight: FontWeight.w700, color: context.inkPrimary),
+                        style: AppTypography.body(
+                          AppTypography.bodyXLarge,
+                          weight: FontWeight.w700,
+                          color: context.inkPrimary,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         folder.path,
-                        style: AppTypography.body(AppTypography.bodyMedium,
-                            color: context.inkMuted),
+                        style: AppTypography.body(
+                          AppTypography.bodyMedium,
+                          color: context.inkMuted,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Icon(Icons.arrow_forward_ios_rounded,
-                    size: 16, color: context.inkSoft),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 16,
+                  color: context.inkSoft,
+                ),
               ],
             ),
           ),
@@ -300,19 +316,16 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _notFound() => const EmptyState(
-        title: 'No results found',
-        message:
-            'Sorry, the keyword you entered cannot be found, please check again '
-            'or search with another keyword.',
-        icon: Icons.search_off_rounded,
-      );
+    title: 'No results found',
+    message:
+        'Sorry, the keyword you entered cannot be found, please check again '
+        'or search with another keyword.',
+    icon: Icons.search_off_rounded,
+  );
 
   void _play(List<Song> queue, int index) {
-    final library = context.read<LibraryStore>();
-    library.pushSearch(_query);
-    context.read<PlayerController>().playQueue(queue, index);
-    library.markPlayed(queue[index].id);
-    Navigator.of(context).pushNamed(Routes.player);
+    context.read<LibraryStore>().pushSearch(_query);
+    playSongs(context, queue, index);
   }
 
   void _go(String route, String id) {
@@ -344,12 +357,17 @@ class _SearchField extends StatelessWidget {
       autofocus: true,
       textInputAction: TextInputAction.search,
       onSubmitted: (_) => onSubmit(),
-      style: AppTypography.body(AppTypography.bodyXLarge,
-          weight: FontWeight.w600, color: context.inkPrimary),
+      style: AppTypography.body(
+        AppTypography.bodyXLarge,
+        weight: FontWeight.w600,
+        color: context.inkPrimary,
+      ),
       decoration: InputDecoration(
         hintText: 'Songs, artists, albums',
-        hintStyle:
-            AppTypography.body(AppTypography.bodyXLarge, color: context.inkSoft),
+        hintStyle: AppTypography.body(
+          AppTypography.bodyXLarge,
+          color: context.inkSoft,
+        ),
         prefixIcon: Icon(
           Icons.search_rounded,
           color: focused ? AppColors.primary : context.inkSoft,
@@ -390,7 +408,9 @@ class _CategoryChip extends StatelessWidget {
       borderRadius: BorderRadius.circular(Insets.radiusPill),
       child: Container(
         padding: const EdgeInsets.symmetric(
-            horizontal: Insets.gapXl, vertical: Insets.gapMd),
+          horizontal: Insets.gapXl,
+          vertical: Insets.gapMd,
+        ),
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(Insets.radiusPill),

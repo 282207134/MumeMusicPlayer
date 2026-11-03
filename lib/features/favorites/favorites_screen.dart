@@ -7,11 +7,11 @@ import '../../app/theme/app_dimens.dart';
 import '../../app/theme/app_theme.dart';
 import '../../app/widgets/app_logo.dart';
 import '../../app/widgets/buttons.dart';
+import '../../app/widgets/detail_sections.dart';
 import '../../app/widgets/song_option_sheet.dart';
 import '../../app/widgets/sort_menu.dart';
 import '../../app/widgets/tiles.dart';
 import '../../data/library_store.dart';
-import '../../data/models/media.dart';
 import '../../data/player_controller.dart';
 
 /// `23_favorites` — the liked-song board. It doubles as the Favorites tab, so
@@ -40,7 +40,11 @@ class FavoritesScreen extends StatelessWidget {
         child: ListView(
           // Bottom room for the mini player + nav bar drawn by the root shell.
           padding: const EdgeInsets.fromLTRB(
-              Insets.page, Insets.gapLg, Insets.page, 152),
+            Insets.page,
+            Insets.gapLg,
+            Insets.page,
+            152,
+          ),
           children: [
             AppWordmark(
               title: 'Favorites',
@@ -55,7 +59,7 @@ class FavoritesScreen extends StatelessWidget {
                     icon: Icons.shuffle_rounded,
                     onPressed: songs.isEmpty
                         ? null
-                        : () => _play(context, songs, 0, shuffle: true),
+                        : () => playSongs(context, songs, 0, shuffle: true),
                   ),
                 ),
                 const SizedBox(width: Insets.gapMd),
@@ -66,7 +70,7 @@ class FavoritesScreen extends StatelessWidget {
                     color: AppColors.primary,
                     onPressed: songs.isEmpty
                         ? null
-                        : () => _play(context, songs, 0),
+                        : () => playSongs(context, songs, 0),
                   ),
                 ),
               ],
@@ -74,9 +78,9 @@ class FavoritesScreen extends StatelessWidget {
             CountSortBar(
               count: '${songs.length} favorites',
               sortLabel: library.songSort.label,
-              onSort: () async {
+              onSort: (anchor) async {
                 final picked = await showSortMenu<SongSort>(
-                  context,
+                  anchor,
                   choices: _choices,
                   selected: library.songSort,
                 );
@@ -88,23 +92,20 @@ class FavoritesScreen extends StatelessWidget {
                 padding: EdgeInsets.only(top: Insets.gapXl),
                 child: EmptyState(
                   title: 'No favorites yet',
-                  message:
-                      'Tap the heart on any track and it will be waiting for you here.',
+                  message: 'Tap the heart on any track and it will be waiting for you here.',
                   icon: Icons.favorite_outline_rounded,
                 ),
               )
             else ...[
               Divider(color: context.separatorColor),
               for (var i = 0; i < songs.length; i++) ...[
-                if (i > 0) Divider(color: context.separatorColor),
                 SongTile(
                   song: songs[i],
-                  active:
-                      player.current?.id == songs[i].id && player.isPlaying,
-                  onTap: () => _play(context, songs, i),
+                  active: player.current?.id == songs[i].id && player.isPlaying,
+                  onTap: () => playSongs(context, songs, i),
                   onPlay: () => player.current?.id == songs[i].id
                       ? player.toggle()
-                      : _play(context, songs, i),
+                      : playSongs(context, songs, i),
                   onMenu: () => showSongOptions(context, songs[i]),
                 ),
               ],
@@ -113,18 +114,5 @@ class FavoritesScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  static void _play(
-    BuildContext context,
-    List<Song> songs,
-    int index, {
-    bool shuffle = false,
-  }) {
-    final player = context.read<PlayerController>();
-    if (shuffle && !player.shuffle) player.toggleShuffle();
-    player.playQueue(songs, index);
-    context.read<LibraryStore>().markPlayed(songs[index].id);
-    Navigator.of(context).pushNamed(Routes.player);
   }
 }

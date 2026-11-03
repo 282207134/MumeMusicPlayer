@@ -7,6 +7,7 @@ import '../../app/theme/app_dimens.dart';
 import '../../app/theme/app_theme.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/widgets/buttons.dart';
+import '../../app/widgets/detail_sections.dart';
 import '../../app/widgets/page.dart';
 import '../../app/widgets/song_option_sheet.dart';
 import '../../app/widgets/tiles.dart';
@@ -39,10 +40,13 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
     final subfolders = <String>{for (final song in all) song.album}
         .take(folder.subfolderCount)
         .toList();
-    final songs =
-        _group == null ? all : all.where((s) => s.album == _group).toList();
-    final total =
-        songs.fold<Duration>(Duration.zero, (sum, s) => sum + s.duration);
+    final songs = _group == null
+        ? all
+        : all.where((s) => s.album == _group).toList();
+    final total = songs.fold<Duration>(
+      Duration.zero,
+      (sum, s) => sum + s.duration,
+    );
     final parts = folder.path.split('/');
     final crumbs = <Widget>[
       for (var i = 0; i < parts.length; i++)
@@ -80,58 +84,48 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
               for (var i = 0; i < crumbs.length; i++) ...[
                 if (i > 0)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Insets.gapSm),
-                    child: Icon(Icons.arrow_forward_ios_rounded,
-                        size: 13, color: context.inkSoft),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Insets.gapSm,
+                    ),
+                    child: Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 13,
+                      color: context.inkSoft,
+                    ),
                   ),
                 crumbs[i],
               ],
             ],
           ),
           const SizedBox(height: Insets.gapLg),
-          Center(child: _FolderGlyph(size: Insets.coverGrid * 2 - 10)),
+          Center(child: FolderGlyph(size: Insets.coverGrid * 2 - 10)),
           const SizedBox(height: Insets.gapXl),
           Text(
             folder.name,
             textAlign: TextAlign.center,
-            style: AppTypography.heading(AppTypography.h4,
-                color: context.inkPrimary),
+            style: AppTypography.heading(
+              AppTypography.h4,
+              color: context.inkPrimary,
+            ),
           ),
           const SizedBox(height: Insets.gapSm),
           Text(
             '${songs.length} Songs  |  '
-            '${formatClock(total).padLeft(8, '0')} mins',
+            '${formatTotal(total)} mins',
             textAlign: TextAlign.center,
-            style:
-                AppTypography.body(AppTypography.bodyLarge, color: context.inkMuted),
+            style: AppTypography.body(
+              AppTypography.bodyLarge,
+              color: context.inkMuted,
+            ),
           ),
           const SizedBox(height: Insets.gapXl),
-          Row(
-            children: [
-              Expanded(
-                child: PrimaryPillButton(
-                  label: 'Shuffle',
-                  icon: Icons.shuffle_rounded,
-                  onPressed: () => _start(songs, shuffle: true),
-                ),
-              ),
-              const SizedBox(width: Insets.gapLg),
-              Expanded(
-                child: SoftPillButton(
-                  label: 'Play',
-                  icon: Icons.play_circle_fill_rounded,
-                  onPressed: () => _start(songs, shuffle: false),
-                ),
-              ),
-            ],
-          ),
+          ShufflePlayRow(songs: songs),
           const SizedBox(height: Insets.gapXl),
           Divider(color: context.separatorColor),
           if (subfolders.isNotEmpty) ...[
             const SectionHeader(
               title: 'Subfolders',
-              padding: EdgeInsets.only(
-                  top: Insets.gapLg, bottom: Insets.gapMd),
+              padding: EdgeInsets.only(top: Insets.gapLg, bottom: Insets.gapMd),
             ),
             for (final name in subfolders)
               _subfolderRow(
@@ -144,20 +138,22 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
           SectionHeader(
             title: 'Songs',
             actionLabel: _group == null ? null : 'Clear',
-            onAction: _group == null ? null : () => setState(() => _group = null),
+            onAction: _group == null
+                ? null
+                : () => setState(() => _group = null),
             padding: const EdgeInsets.only(
-                top: Insets.gapLg, bottom: Insets.gapMd),
+              top: Insets.gapLg,
+              bottom: Insets.gapMd,
+            ),
           ),
-          for (var i = 0; i < songs.length; i++) ...[
-            if (i > 0) Divider(color: context.separatorColor),
+          for (var i = 0; i < songs.length; i++)
             SongTile(
               song: songs[i],
               active: player.current?.id == songs[i].id && player.isPlaying,
-              onTap: () => _play(songs, i),
-              onPlay: () => _play(songs, i),
+              onTap: () => playSongs(context, songs, i),
+              onPlay: () => playSongs(context, songs, i),
               onMenu: () => showSongOptions(context, songs[i]),
             ),
-          ],
         ],
       ),
     );
@@ -185,71 +181,39 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
     required int count,
     required bool selected,
     required VoidCallback onTap,
-  }) =>
-      InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: Insets.gapMd),
-          child: Row(
-            children: [
-              Icon(
-                selected ? Icons.folder_open_rounded : Icons.folder_rounded,
-                size: 34,
-                color: AppColors.primary,
-              ),
-              const SizedBox(width: Insets.gapMd),
-              Expanded(
-                child: Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.body(AppTypography.bodyXLarge,
-                      weight: FontWeight.w600, color: context.inkPrimary),
-                ),
-              ),
-              Text(
-                '$count songs',
-                style: AppTypography.body(AppTypography.bodyMedium,
-                    color: context.inkMuted),
-              ),
-            ],
+  }) => InkWell(
+    onTap: onTap,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: Insets.gapMd),
+      child: Row(
+        children: [
+          Icon(
+            selected ? Icons.folder_open_rounded : Icons.folder_rounded,
+            size: 34,
+            color: AppColors.primary,
           ),
-        ),
-      );
-
-  void _start(List<Song> queue, {required bool shuffle}) {
-    final player = context.read<PlayerController>();
-    player.playQueue(queue, 0);
-    if (shuffle && !player.shuffle) player.toggleShuffle();
-    context.read<LibraryStore>().markPlayed(queue.first.id);
-    Navigator.of(context).pushNamed(Routes.player);
-  }
-
-  void _play(List<Song> queue, int index) {
-    final library = context.read<LibraryStore>();
-    context.read<PlayerController>().playQueue(queue, index);
-    library.markPlayed(queue[index].id);
-    Navigator.of(context).pushNamed(Routes.player);
-  }
-}
-
-/// The kit's chunky orange folder mark with the minus bar punched out.
-class _FolderGlyph extends StatelessWidget {
-  const _FolderGlyph({required this.size});
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-        width: size,
-        height: size,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Icon(Icons.folder_rounded, size: size, color: AppColors.primary),
-            Icon(Icons.remove_rounded,
-                size: size * 0.16, color: context.pageBackground),
-          ],
-        ),
-      );
+          const SizedBox(width: Insets.gapMd),
+          Expanded(
+            child: Text(
+              name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.body(
+                AppTypography.bodyXLarge,
+                weight: FontWeight.w600,
+                color: context.inkPrimary,
+              ),
+            ),
+          ),
+          Text(
+            '$count songs',
+            style: AppTypography.body(
+              AppTypography.bodyMedium,
+              color: context.inkMuted,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

@@ -14,10 +14,8 @@ import 'sheets.dart';
 import 'tiles.dart';
 
 /// Opens the shared song overflow sheet (`8_home song option`).
-Future<void> showSongOptions(BuildContext context, Song song) => showMumeSheet(
-      context,
-      builder: (_) => SongOptionSheet(song: song),
-    );
+Future<void> showSongOptions(BuildContext context, Song song) =>
+    showMumeSheet(context, builder: (_) => SongOptionSheet(song: song));
 
 class SongOptionSheet extends StatelessWidget {
   const SongOptionSheet({super.key, required this.song});
@@ -64,45 +62,49 @@ class SongOptionSheet extends StatelessWidget {
         OptionTile(
           icon: Icons.add_circle_outline_rounded,
           label: 'Add to Playlist',
-          onTap: () => run(() => Navigator.of(context)
-              .pushNamed(Routes.addToPlaylist, arguments: MediaArgs(song.id))),
+          onTap: () => run(
+            () => Navigator.of(context)
+                .pushNamed(Routes.addToPlaylist, arguments: MediaArgs(song.id)),
+          ),
         ),
         OptionTile(
           icon: Icons.album_outlined,
           label: 'Go to Album',
-          onTap: () => run(() => Navigator.of(context).pushNamed(
-              Routes.album, arguments: MediaArgs(MusicLibrary.albumOfSong(song).id))),
+          onTap: () => run(
+            () => Navigator.of(context).pushNamed(
+              Routes.album,
+              arguments: MediaArgs(MusicLibrary.albumOfSong(song).id),
+            ),
+          ),
         ),
         OptionTile(
           icon: Icons.person_outline_rounded,
           label: 'Go to Artist',
-          onTap: () => run(() => Navigator.of(context).pushNamed(
+          onTap: () => run(
+            () => Navigator.of(context).pushNamed(
               Routes.artist,
-              arguments: MediaArgs(MusicLibrary.artistOfSong(song).id))),
+              arguments: MediaArgs(MusicLibrary.artistOfSong(song).id),
+            ),
+          ),
         ),
         OptionTile(
           icon: Icons.info_outline_rounded,
           label: 'Details',
           onTap: () => run(() => showSongDetails(context, song)),
         ),
-        const OptionTile(
-          icon: Icons.phone_outlined,
-          label: 'Set as Ringtone',
-        ),
-        const OptionTile(
-          icon: Icons.block_rounded,
-          label: 'Add to Blacklist',
-        ),
-        const OptionTile(
-          icon: Icons.send_outlined,
-          label: 'Share',
-        ),
+        const OptionTile(icon: Icons.phone_outlined, label: 'Set as Ringtone'),
+        const OptionTile(icon: Icons.block_rounded, label: 'Add to Blacklist'),
+        const OptionTile(icon: Icons.send_outlined, label: 'Share'),
         OptionTile(
           icon: Icons.delete_outline_rounded,
           label: 'Delete from Device',
           destructive: true,
-          onTap: () => run(() => showSnack(
-              context, '${song.title} removed from this device (demo)')),
+          onTap: () => run(
+            () => showSnack(
+              context,
+              '${song.title} removed from this device (demo)',
+            ),
+          ),
         ),
       ],
     );
@@ -120,24 +122,42 @@ void showSongDetails(BuildContext context, Song song) {
         children: [
           CoverArt(asset: song.cover, size: 96, radius: Insets.radiusLg),
           const SizedBox(height: Insets.gapLg),
-          Text('Artist: ${song.artist}',
-              style: AppTypography.body(AppTypography.bodyLarge,
-                  color: ctx.inkMuted)),
-          Text('Album: ${song.album}',
-              style: AppTypography.body(AppTypography.bodyLarge,
-                  color: ctx.inkMuted)),
-          Text('Duration: ${song.durationLabel} mins',
-              style: AppTypography.body(AppTypography.bodyLarge,
-                  color: ctx.inkMuted)),
+          Text(
+            'Artist: ${song.artist}',
+            style: AppTypography.body(
+              AppTypography.bodyLarge,
+              color: ctx.inkMuted,
+            ),
+          ),
+          Text(
+            'Album: ${song.album}',
+            style: AppTypography.body(
+              AppTypography.bodyLarge,
+              color: ctx.inkMuted,
+            ),
+          ),
+          Text(
+            'Duration: ${song.durationLabel} mins',
+            style: AppTypography.body(
+              AppTypography.bodyLarge,
+              color: ctx.inkMuted,
+            ),
+          ),
           if (song.releaseYear != null)
-            Text('Released: ${song.releaseYear}',
-                style: AppTypography.body(AppTypography.bodyLarge,
-                    color: ctx.inkMuted)),
+            Text(
+              'Released: ${song.releaseYear}',
+              style: AppTypography.body(
+                AppTypography.bodyLarge,
+                color: ctx.inkMuted,
+              ),
+            ),
         ],
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+          onPressed: () => Navigator.pop(ctx),
+          child: const Text('Close'),
+        ),
       ],
     ),
   );
@@ -146,9 +166,11 @@ void showSongDetails(BuildContext context, Song song) {
 void showSnack(BuildContext context, String message) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(
-      content: Text(message),
-      behavior: SnackBarBehavior.floating,
-      margin: const EdgeInsets.all(Insets.gapLg),
-    ));
+    ..showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(Insets.gapLg),
+      ),
+    );
 }

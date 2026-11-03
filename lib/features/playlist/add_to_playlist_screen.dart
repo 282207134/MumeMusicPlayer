@@ -17,28 +17,47 @@ import '../../data/music_library.dart';
 /// `29_add song to playlist` — which boards already hold this track and a
 /// direct route to file it into a new one.
 class AddToPlaylistScreen extends StatelessWidget {
-  const AddToPlaylistScreen({super.key, required this.songId});
+  const AddToPlaylistScreen({
+    super.key,
+    required this.songId,
+    this.songIds = const [],
+  });
 
   final String songId;
+  final List<String> songIds;
+
+  List<String> get _songIds => songIds.isEmpty ? [songId] : songIds;
 
   @override
   Widget build(BuildContext context) {
     final library = context.watch<LibraryStore>();
-    final song = MusicLibrary.songById(songId);
-    final included = library.playlistsContaining(songId);
+    final songs = MusicLibrary.songsByIds(_songIds);
+    final song = songs.first;
+    final included = library.playlists
+        .where((playlist) => _songIds.every(playlist.songIds.contains))
+        .map((playlist) => playlist.id)
+        .toSet();
 
     return Scaffold(
       appBar: PageTopBar(title: 'Add to Playlist'),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
-            Insets.page, Insets.gapSm, Insets.page, Insets.gap2xl),
+          Insets.page,
+          Insets.gapSm,
+          Insets.page,
+          Insets.gap2xl,
+        ),
         children: [
           SongSheetHeader(
-            title: song.title,
-            subtitle: '${song.artist}  |  ${song.durationLabel} mins',
+            title: songs.length == 1 ? song.title : '${songs.length} Songs',
+            subtitle: songs.length == 1
+                ? '${song.artist}  |  ${song.durationLabel} mins'
+                : song.artist,
             cover: song.cover,
-            favorited: library.isFavorite(song.id),
-            onFavorite: () => library.toggleFavorite(song.id),
+            favorited: songs.length == 1 && library.isFavorite(song.id),
+            onFavorite: songs.length == 1
+                ? () => library.toggleFavorite(song.id)
+                : null,
           ),
           Divider(color: context.separatorColor),
           InkWell(
@@ -58,8 +77,11 @@ class AddToPlaylistScreen extends StatelessWidget {
                         colors: AppColors.gradientOrange,
                       ),
                     ),
-                    child: const Icon(Icons.add_rounded,
-                        color: AppColors.white, size: 30),
+                    child: const Icon(
+                      Icons.add_rounded,
+                      color: AppColors.white,
+                      size: 30,
+                    ),
                   ),
                   const SizedBox(width: Insets.gapLg),
                   Text(
@@ -77,19 +99,17 @@ class AddToPlaylistScreen extends StatelessWidget {
           if (library.playlists.isEmpty)
             const EmptyState(
               title: 'No playlists yet',
-              message:
-                  'Create a playlist first and this song will have somewhere to live.',
+              message: 'Create a playlist first and this song will have somewhere to live.',
               icon: Icons.playlist_add_rounded,
             )
           else
             for (final playlist in library.playlists) ...[
-              Divider(color: context.separatorColor),
               PlaylistTile(
                 title: playlist.name,
                 cover: playlist.cover,
                 subtitle: '${playlist.songIds.length} songs',
                 onTap: () => _toggle(context, playlist),
-                trailing: _PickMark(
+                trailing: PickMark(
                   added: included.contains(playlist.id),
                   onTap: () => _toggle(context, playlist),
                 ),
@@ -102,20 +122,23 @@ class AddToPlaylistScreen extends StatelessWidget {
 
   void _toggle(BuildContext context, Playlist playlist) {
     final library = context.read<LibraryStore>();
-    if (!playlist.songIds.contains(songId)) {
-      library.addToPlaylist(playlist.id, songId);
+    if (!_songIds.every(playlist.songIds.contains)) {
+      for (final id in _songIds) {
+        library.addToPlaylist(playlist.id, id);
+      }
       Navigator.of(context).pop();
       return;
     }
-    library.removeFromPlaylist(playlist.id, songId);
-    showSnack(context,
-        '${MusicLibrary.songById(songId).title} removed from ${playlist.name}');
+    for (final id in _songIds) {
+      library.removeFromPlaylist(playlist.id, id);
+    }
+    showSnack(context, 'Selection removed from ${playlist.name}');
   }
 }
 
 /// Orange square = not in this playlist yet, outlined tick = already filed.
-class _PickMark extends StatelessWidget {
-  const _PickMark({required this.added, this.onTap});
+class PickMark extends StatelessWidget {
+  const PickMark({super.key, required this.added, this.onTap});
 
   final bool added;
   final VoidCallback? onTap;

@@ -4,12 +4,12 @@ import 'package:provider/provider.dart';
 import '../../app/router.dart';
 import '../../app/theme/app_theme.dart';
 import '../../app/widgets/buttons.dart';
+import '../../app/widgets/detail_sections.dart';
 import '../../app/widgets/page.dart';
 import '../../app/widgets/song_option_sheet.dart';
 import '../../app/widgets/sort_menu.dart';
 import '../../app/widgets/tiles.dart';
 import '../../data/library_store.dart';
-import '../../data/models/media.dart';
 import '../../data/player_controller.dart';
 
 /// `19_Light_recently played` — the full play history with the sort bar.
@@ -57,7 +57,7 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
           CountSortBar(
             count: '${songs.length} songs',
             sortLabel: library.songSort.label,
-            onSort: () => _pickSort(library),
+            onSort: (anchor) => _pickSort(anchor, library),
           ),
           Divider(color: context.separatorColor),
           if (songs.isEmpty)
@@ -71,8 +71,8 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
               SongTile(
                 song: songs[i],
                 active: player.current?.id == songs[i].id && player.isPlaying,
-                onTap: () => _play(songs, i),
-                onPlay: () => _play(songs, i),
+                onTap: () => playSongs(context, songs, i),
+                onPlay: () => playSongs(context, songs, i),
                 onMenu: () => showSongOptions(context, songs[i]),
               ),
         ],
@@ -80,9 +80,9 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
     );
   }
 
-  Future<void> _pickSort(LibraryStore library) async {
+  Future<void> _pickSort(BuildContext anchor, LibraryStore library) async {
     final picked = await showSortMenu<SongSort>(
-      context,
+      anchor,
       choices: _choices,
       selected: library.songSort,
     );
@@ -91,12 +91,5 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
     if (picked == null || !context.mounted) return;
     library.songSort = picked;
     setState(() {});
-  }
-
-  void _play(List<Song> queue, int index) {
-    final library = context.read<LibraryStore>();
-    context.read<PlayerController>().playQueue(queue, index);
-    library.markPlayed(queue[index].id);
-    Navigator.of(context).pushNamed(Routes.player);
   }
 }

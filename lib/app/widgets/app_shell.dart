@@ -62,7 +62,11 @@ class MumeScaffold extends StatelessWidget {
 
 /// Home / Favorites / Playlists / Settings, orange when active.
 class MumeBottomNav extends StatelessWidget {
-  const MumeBottomNav({super.key, required this.selected, required this.onSelect});
+  const MumeBottomNav({
+    super.key,
+    required this.selected,
+    required this.onSelect,
+  });
 
   final ShellTab selected;
   final ValueChanged<ShellTab> onSelect;
@@ -94,10 +98,15 @@ class MumeBottomNav extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.cardBackground,
         borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(Insets.radiusXl)),
+          top: Radius.circular(Insets.radiusXl),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: Theme.of(context).brightness == Brightness.dark ? 0.4 : 0.07),
+            color: Colors.black.withValues(
+              alpha: Theme.of(context).brightness == Brightness.dark
+                  ? 0.4
+                  : 0.07,
+            ),
             blurRadius: 24,
             offset: const Offset(0, -6),
           ),
@@ -171,7 +180,11 @@ class MiniPlayer extends StatelessWidget {
                   children: [
                     Stack(
                       children: [
-                        CoverArt(asset: song.cover, size: 44, radius: Insets.radiusMd),
+                        CoverArt(
+                          asset: song.cover,
+                          size: 44,
+                          radius: Insets.radiusMd,
+                        ),
                         Positioned(
                           left: 0,
                           right: 0,
@@ -182,8 +195,9 @@ class MiniPlayer extends StatelessWidget {
                               value: player.progress,
                               minHeight: 2.5,
                               backgroundColor: Colors.black26,
-                              valueColor:
-                                  const AlwaysStoppedAnimation(AppColors.white),
+                              valueColor: const AlwaysStoppedAnimation(
+                                AppColors.white,
+                              ),
                             ),
                           ),
                         ),

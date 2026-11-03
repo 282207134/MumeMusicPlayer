@@ -18,8 +18,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  late final TabController _controller =
-      TabController(length: _tabs.length, vsync: this);
+  late final TabController _controller = TabController(
+    length: _tabs.length,
+    vsync: this,
+  );
 
   @override
   void dispose() {
@@ -33,17 +35,18 @@ class _HomeScreenState extends State<HomeScreen>
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(
-              Insets.page, Insets.gapLg, Insets.gapMd, 0),
+            Insets.page,
+            Insets.gapLg,
+            Insets.gapMd,
+            0,
+          ),
           child: AppWordmark(
             onSearch: () => Navigator.of(context).pushNamed(Routes.search),
           ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: Insets.gapSm),
-          child: UnderlineTabs(
-            tabs: _tabs,
-            controller: _controller,
-          ),
+          child: UnderlineTabs(tabs: _tabs, controller: _controller),
         ),
         Expanded(
           child: TabBarView(

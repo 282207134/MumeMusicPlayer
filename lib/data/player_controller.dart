@@ -40,15 +40,19 @@ class PlayerController extends ChangeNotifier {
   List<String> get lyricQueue => _lyricQueue;
   int get lyricLine => _lyricLine;
 
-  double get progress =>
-      duration.inMilliseconds == 0 ? 0 : position.inMilliseconds / duration.inMilliseconds;
+  double get progress => duration.inMilliseconds == 0
+      ? 0
+      : position.inMilliseconds / duration.inMilliseconds;
 
   /// Index of the lyric line that matches [_position] — one line per equal
   /// slice of the track, which is what the artboard's scrolling block shows.
   void _syncLyricLine() {
     if (_lyricQueue.isEmpty || duration == Duration.zero) return;
     final per = duration.inMilliseconds / _lyricQueue.length;
-    _lyricLine = (position.inMilliseconds / per).floor().clamp(0, _lyricQueue.length - 1);
+    _lyricLine = (position.inMilliseconds / per).floor().clamp(
+      0,
+      _lyricQueue.length - 1,
+    );
   }
 
   void playQueue(List<Song> songs, int startIndex, {bool replace = true}) {
@@ -81,13 +85,14 @@ class PlayerController extends ChangeNotifier {
 
   void seek(Duration to) {
     if (!hasTrack) return;
-    _position = to < Duration.zero ? Duration.zero : (to > duration ? duration : to);
+    _position = to < Duration.zero
+        ? Duration.zero
+        : (to > duration ? duration : to);
     _syncLyricLine();
     notifyListeners();
   }
 
-  void skip(int seconds) =>
-      seek(_position + Duration(seconds: seconds));
+  void skip(int seconds) => seek(_position + Duration(seconds: seconds));
 
   void next() {
     if (_queue.isEmpty) return;

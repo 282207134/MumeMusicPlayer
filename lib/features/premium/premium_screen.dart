@@ -83,10 +83,8 @@ abstract final class PremiumPlans {
 
   static const all = <PremiumPlan>[monthly, quarterly, yearly];
 
-  static PremiumPlan byId(String? id) => all.firstWhere(
-        (plan) => plan.id == id,
-        orElse: () => monthly,
-      );
+  static PremiumPlan byId(String? id) =>
+      all.firstWhere((plan) => plan.id == id, orElse: () => monthly);
 }
 
 /// Gradient pricing card, reused by the review board as a plain summary.
@@ -117,7 +115,9 @@ class PremiumPlanCard extends StatelessWidget {
             color: selected ? AppColors.primary : Colors.transparent,
             boxShadow: [
               BoxShadow(
-                color: plan.gradient.last.withValues(alpha: selected ? 0.45 : 0.28),
+                color: plan.gradient.last.withValues(
+                  alpha: selected ? 0.45 : 0.28,
+                ),
                 blurRadius: selected ? 30 : 20,
                 offset: const Offset(0, 14),
               ),
@@ -142,8 +142,11 @@ class PremiumPlanCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(Icons.workspace_premium_rounded,
-                        size: 46, color: AppColors.white),
+                    const Icon(
+                      Icons.workspace_premium_rounded,
+                      size: 46,
+                      color: AppColors.white,
+                    ),
                     const SizedBox(height: Insets.gapLg),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -152,8 +155,10 @@ class PremiumPlanCard extends StatelessWidget {
                       children: [
                         Text(
                           plan.priceLabel,
-                          style: AppTypography.heading(AppTypography.h3,
-                              color: AppColors.white),
+                          style: AppTypography.heading(
+                            AppTypography.h3,
+                            color: AppColors.white,
+                          ),
                         ),
                         const SizedBox(width: Insets.gapSm),
                         Flexible(
@@ -178,11 +183,16 @@ class PremiumPlanCard extends StatelessWidget {
                     const SizedBox(height: Insets.gapMd),
                     for (final benefit in plan.benefits)
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: Insets.gapSm),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: Insets.gapSm,
+                        ),
                         child: Row(
                           children: [
-                            const Icon(Icons.check_rounded,
-                                size: 22, color: AppColors.white),
+                            const Icon(
+                              Icons.check_rounded,
+                              size: 22,
+                              color: AppColors.white,
+                            ),
                             const SizedBox(width: Insets.gapLg),
                             Expanded(
                               child: Text(
@@ -223,62 +233,70 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
   void _choose(PremiumPlan plan) => setState(() => _selected = plan);
 
-  void _subscribe() => Navigator.of(context)
-      .pushNamed(Routes.paymentMethod, arguments: _selected.id);
+  void _subscribe() =>
+      Navigator.of(context)
+          .pushNamed(Routes.paymentMethod, arguments: _selected.id);
 
   Future<void> _restore() => showMumeSheet<void>(
-        context,
-        builder: (ctx) => MumeSheet(
-          title: 'Restore purchase',
-          children: [
-            Text(
-              'Premium subscriptions are linked to the Google account signed in on this device.',
-              style: AppTypography.body(AppTypography.bodyLarge,
-                  color: ctx.inkMuted),
-            ),
-            const SizedBox(height: Insets.gapLg),
-            Container(
-              padding: const EdgeInsets.all(Insets.gapLg),
-              decoration: BoxDecoration(
-                color: ctx.tintBackground,
-                borderRadius: BorderRadius.circular(Insets.radiusLg),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.account_circle_rounded,
-                      size: 40, color: AppColors.primary),
-                  const SizedBox(width: Insets.gapLg),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'andrew.ainsley@gmail.com',
-                          style: AppTypography.body(
-                            AppTypography.bodyXLarge,
-                            weight: FontWeight.w600,
-                            color: ctx.inkPrimary,
-                          ),
-                        ),
-                        Text(
-                          'No active Premium subscription found',
-                          style: AppTypography.body(AppTypography.bodyMedium,
-                              color: ctx.inkMuted),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            OptionTile(
-              icon: Icons.close_rounded,
-              label: 'Close',
-              onTap: () => Navigator.of(ctx).pop(),
-            ),
-          ],
+    context,
+    builder: (ctx) => MumeSheet(
+      title: 'Restore purchase',
+      children: [
+        Text(
+          'Premium subscriptions are linked to the Google account signed in on this device.',
+          style: AppTypography.body(
+            AppTypography.bodyLarge,
+            color: ctx.inkMuted,
+          ),
         ),
-      );
+        const SizedBox(height: Insets.gapLg),
+        Container(
+          padding: const EdgeInsets.all(Insets.gapLg),
+          decoration: BoxDecoration(
+            color: ctx.tintBackground,
+            borderRadius: BorderRadius.circular(Insets.radiusLg),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.account_circle_rounded,
+                size: 40,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: Insets.gapLg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'andrew.ainsley@gmail.com',
+                      style: AppTypography.body(
+                        AppTypography.bodyXLarge,
+                        weight: FontWeight.w600,
+                        color: ctx.inkPrimary,
+                      ),
+                    ),
+                    Text(
+                      'No active Premium subscription found',
+                      style: AppTypography.body(
+                        AppTypography.bodyMedium,
+                        color: ctx.inkMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        OptionTile(
+          icon: Icons.close_rounded,
+          label: 'Close',
+          onTap: () => Navigator.of(ctx).pop(),
+        ),
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -290,8 +308,10 @@ class _PremiumScreenState extends State<PremiumScreen> {
           const SizedBox(height: Insets.gapMd),
           Text(
             'Recurring billing, cancel anytime.',
-            style: AppTypography.body(AppTypography.bodyMedium,
-                color: context.inkSoft),
+            style: AppTypography.body(
+              AppTypography.bodyMedium,
+              color: context.inkSoft,
+            ),
           ),
           TextButton(
             onPressed: _restore,
@@ -305,15 +325,19 @@ class _PremiumScreenState extends State<PremiumScreen> {
           Text(
             'Subscribe to Premium',
             textAlign: TextAlign.center,
-            style: AppTypography.heading(AppTypography.h3,
-                color: AppColors.primary),
+            style: AppTypography.heading(
+              AppTypography.h3,
+              color: AppColors.primary,
+            ),
           ),
           const SizedBox(height: Insets.gapMd),
           Text(
             _subtitle,
             textAlign: TextAlign.center,
-            style: AppTypography.body(AppTypography.bodyXLarge,
-                color: context.inkMuted),
+            style: AppTypography.body(
+              AppTypography.bodyXLarge,
+              color: context.inkMuted,
+            ),
           ),
           const SizedBox(height: Insets.gap2xl),
           for (final plan in PremiumPlans.all)

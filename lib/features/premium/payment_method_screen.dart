@@ -14,28 +14,28 @@ enum PaymentMethodKind { googlePay, paypal, card }
 
 extension PaymentMethodKindX on PaymentMethodKind {
   String get label => switch (this) {
-        PaymentMethodKind.googlePay => 'Google Pay',
-        PaymentMethodKind.paypal => 'PayPal',
-        PaymentMethodKind.card => 'Debit or Credit Card',
-      };
+    PaymentMethodKind.googlePay => 'Google Pay',
+    PaymentMethodKind.paypal => 'PayPal',
+    PaymentMethodKind.card => 'Debit or Credit Card',
+  };
 
   IconData get icon => switch (this) {
-        PaymentMethodKind.googlePay => Icons.g_mobiledata_rounded,
-        PaymentMethodKind.paypal => Icons.paypal,
-        PaymentMethodKind.card => Icons.credit_card_rounded,
-      };
+    PaymentMethodKind.googlePay => Icons.g_mobiledata_rounded,
+    PaymentMethodKind.paypal => Icons.paypal,
+    PaymentMethodKind.card => Icons.credit_card_rounded,
+  };
 
   Color get tint => switch (this) {
-        PaymentMethodKind.googlePay => AppColors.grey100,
-        PaymentMethodKind.paypal => AppColors.bgBlue,
-        PaymentMethodKind.card => AppColors.bgOrange,
-      };
+    PaymentMethodKind.googlePay => AppColors.grey100,
+    PaymentMethodKind.paypal => AppColors.bgBlue,
+    PaymentMethodKind.card => AppColors.bgOrange,
+  };
 
   Color get markColor => switch (this) {
-        PaymentMethodKind.googlePay => AppColors.grey800,
-        PaymentMethodKind.paypal => AppColors.info,
-        PaymentMethodKind.card => AppColors.primary,
-      };
+    PaymentMethodKind.googlePay => AppColors.grey800,
+    PaymentMethodKind.paypal => AppColors.info,
+    PaymentMethodKind.card => AppColors.primary,
+  };
 }
 
 /// What the shopper picked on this board; travels along the rest of the flow.
@@ -70,7 +70,9 @@ class PaymentMethodMark extends StatelessWidget {
     if (card != null) {
       return SizedBox(
         width: size,
-        child: Center(child: CardBrandMark(brand: card!.brand, size: size * 0.86)),
+        child: Center(
+          child: CardBrandMark(brand: card!.brand, size: size * 0.86),
+        ),
       );
     }
     return Container(
@@ -105,9 +107,15 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   bool _argsRead = false;
 
   BankCard? get _card =>
-      _kind == PaymentMethodKind.card && _cardIndex != null && _cardIndex! < _cards.length
-          ? _cards[_cardIndex!]
-          : null;
+      _kind == PaymentMethodKind.card &&
+          _cardIndex != null &&
+          _cardIndex! < _cards.length
+      ? _cards[_cardIndex!]
+      : null;
+
+  /// The card group stays lit until one of its saved cards takes the radio.
+  bool _rowSelected(PaymentMethodKind kind) =>
+      _kind == kind && (kind != PaymentMethodKind.card || _card == null);
 
   @override
   void didChangeDependencies() {
@@ -131,9 +139,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   }
 
   Future<BankCard?> _addCard() async {
-    debugPrint('DEBUG addCard pushing ${Routes.cardForm}');
     final result = await Navigator.of(context).pushNamed(Routes.cardForm);
-    debugPrint('DEBUG addCard popped with $result');
     final card = result is BankCard ? result : null;
     if (card != null && mounted) {
       setState(() {
@@ -150,11 +156,16 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       final added = await _addCard();
       if (added == null || !mounted) return;
     }
-    final selection = PaymentSelection(planId: _planId, kind: _kind, card: _card);
+    final selection = PaymentSelection(
+      planId: _planId,
+      kind: _kind,
+      card: _card,
+    );
     if (_editing) {
       Navigator.of(context).pop(selection);
     } else {
-      Navigator.of(context).pushNamed(Routes.reviewSummary, arguments: selection);
+      Navigator.of(context)
+          .pushNamed(Routes.reviewSummary, arguments: selection);
     }
   }
 
@@ -168,14 +179,16 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         children: [
           Text(
             'Select the payment method you want to use.',
-            style: AppTypography.body(AppTypography.bodyLarge,
-                color: context.inkMuted),
+            style: AppTypography.body(
+              AppTypography.bodyLarge,
+              color: context.inkMuted,
+            ),
           ),
           const SizedBox(height: Insets.gapXl),
           for (final kind in PaymentMethodKind.values) ...[
             _OptionRow(
               title: kind.label,
-              selected: _kind == kind && (kind != PaymentMethodKind.card || _card == null),
+              selected: _rowSelected(kind),
               leading: PaymentMethodMark(kind: kind),
               onTap: () => setState(() => _kind = kind),
             ),
@@ -294,7 +307,9 @@ class _Radio extends StatelessWidget {
           width: 12,
           height: 12,
           decoration: const BoxDecoration(
-              shape: BoxShape.circle, color: AppColors.primary),
+            shape: BoxShape.circle,
+            color: AppColors.primary,
+          ),
         ),
       ),
     );

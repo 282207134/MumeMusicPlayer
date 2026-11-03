@@ -48,7 +48,15 @@ abstract final class MusicLibrary {
     _s(16, 'ACID TRAP', 'Acidrap', 'Acidrap', 195, 17, 2024),
     _s(17, 'Neon Hollow', 'Acidrap', 'Acidrap', 211, 18, 2024),
     _s(18, 'Blinding Lights', 'The Weeknd', 'After Hours', 200, 19, 2020),
-    _s(19, 'Sweater Weather', 'The Neighbourhood', 'I Love You.', 240, 20, 2013),
+    _s(
+      19,
+      'Sweater Weather',
+      'The Neighbourhood',
+      'I Love You.',
+      240,
+      20,
+      2013,
+    ),
     _s(20, 'Electric Feel', 'MGMT', 'Oracular Spectacular', 229, 21, 2007),
     _s(21, 'Nightcall', 'Kavinsky', 'OutRun', 258, 22, 2013),
     _s(22, 'Resonance', 'HOME', 'Odyssey', 212, 23, 2014),
@@ -56,10 +64,26 @@ abstract final class MusicLibrary {
     _s(24, 'Somewhere Someone', 'Ryan Jones', 'Pain', 189, 25, 2023),
     _s(25, 'Pain', 'Ryan Jones', 'Pain', 233, 26, 2023),
     _s(26, 'Memories of Love', 'Quincy', 'Memories', 246, 27, 2019),
-    _s(27, 'Acoustic Morning', 'Lewis Park', 'Acoustic Sessions', 205, 28, 2018),
+    _s(
+      27,
+      'Acoustic Morning',
+      'Lewis Park',
+      'Acoustic Sessions',
+      205,
+      28,
+      2018,
+    ),
     _s(28, 'Slow Dancing', 'Sunwich', 'Quiet Hours', 267, 29, 2021),
     _s(29, 'Paper Planes', 'Romantic Echoes', 'Solar Drift', 194, 30, 2023),
-    _s(30, 'Colour Outside the Lines', 'Conan Gray', 'Superache', 219, 31, 2022),
+    _s(
+      30,
+      'Colour Outside the Lines',
+      'Conan Gray',
+      'Superache',
+      219,
+      31,
+      2022,
+    ),
     _s(31, 'Ceilings', 'LOLL', 'Ceilings', 176, 32, 2022),
   ];
 
@@ -71,17 +95,16 @@ abstract final class MusicLibrary {
     int seconds,
     int track,
     int year,
-  ) =>
-      Song(
-        id: 's$i',
-        title: title,
-        artist: artist,
-        album: album,
-        duration: Duration(seconds: seconds),
-        cover: cover(i),
-        trackNumber: track,
-        releaseYear: year,
-      );
+  ) => Song(
+    id: 's$i',
+    title: title,
+    artist: artist,
+    album: album,
+    duration: Duration(seconds: seconds),
+    cover: cover(i),
+    trackNumber: track,
+    releaseYear: year,
+  );
 
   static Song songById(String id) =>
       songs.firstWhere((s) => s.id == id, orElse: () => songs.first);
@@ -149,8 +172,13 @@ abstract final class MusicLibrary {
     _album('al8', 'Pain', 'a5', 24, const ['s24', 's25']),
   ];
 
-  static Album _album(String id, String title, String artistId, int coverIndex,
-      List<String> songIds) {
+  static Album _album(
+    String id,
+    String title,
+    String artistId,
+    int coverIndex,
+    List<String> songIds,
+  ) {
     final artist = artistById(artistId);
     return Album(
       id: id,
@@ -167,16 +195,16 @@ abstract final class MusicLibrary {
 
   /// The album that lists [song], falling back to a same-titled single.
   static Album albumOfSong(Song song) => albums.firstWhere(
-        (a) => a.songIds.contains(song.id),
-        orElse: () => Album(
-          id: 'single-${song.id}',
-          title: song.album,
-          artist: song.artist,
-          cover: song.cover,
-          songIds: [song.id],
-          year: song.releaseYear,
-        ),
-      );
+    (a) => a.songIds.contains(song.id),
+    orElse: () => Album(
+      id: 'single-${song.id}',
+      title: song.album,
+      artist: song.artist,
+      cover: song.cover,
+      songIds: [song.id],
+      year: song.releaseYear,
+    ),
+  );
 
   /// The artist whose name opens [song]'s credit line.
   static Artist artistOfSong(Song song) {
@@ -193,80 +221,92 @@ abstract final class MusicLibrary {
     );
   }
 
-  static List<Album> albumsOf(String artistId) =>
-      albums.where((a) => artistById(artistId).albumIds.contains(a.id)).toList();
+  static List<Album> albumsOf(String artistId) => albums
+      .where((a) => artistById(artistId).albumIds.contains(a.id))
+      .toList();
 
   static List<Playlist> initialPlaylists() => <Playlist>[
-        Playlist(
-            id: 'p0',
-            name: 'My Favorite Songs',
-            cover: cover(13),
-            songIds: const ['s2', 's6', 's12', 's19', 's22'],
-            createdOrder: 0),
-        Playlist(
-            id: 'p1',
-            name: '90s Old Song',
-            cover: cover(7),
-            songIds: const ['s20', 's21'],
-            createdOrder: 1),
-        Playlist(
-            id: 'p2',
-            name: 'Legend Rock Song',
-            cover: cover(15),
-            songIds: const ['s19', 's23'],
-            createdOrder: 2),
-        Playlist(
-            id: 'p3',
-            name: 'My Favorite Acoustic Song',
-            cover: cover(3),
-            songIds: const ['s27', 's28'],
-            createdOrder: 3),
-        Playlist(
-            id: 'p4',
-            name: 'Memories of Love',
-            cover: cover(10),
-            songIds: const ['s26', 's4'],
-            createdOrder: 4),
-        Playlist(
-            id: 'p5',
-            name: 'Pain - Ryan Jones',
-            cover: cover(17),
-            songIds: const ['s24', 's25'],
-            createdOrder: 5),
-      ];
+    Playlist(
+      id: 'p0',
+      name: 'My Favorite Songs',
+      cover: cover(13),
+      songIds: const ['s2', 's6', 's12', 's19', 's22'],
+      createdOrder: 0,
+    ),
+    Playlist(
+      id: 'p1',
+      name: '90s Old Song',
+      cover: cover(7),
+      songIds: const ['s20', 's21'],
+      createdOrder: 1,
+    ),
+    Playlist(
+      id: 'p2',
+      name: 'Legend Rock Song',
+      cover: cover(15),
+      songIds: const ['s19', 's23'],
+      createdOrder: 2,
+    ),
+    Playlist(
+      id: 'p3',
+      name: 'My Favorite Acoustic Song',
+      cover: cover(3),
+      songIds: const ['s27', 's28'],
+      createdOrder: 3,
+    ),
+    Playlist(
+      id: 'p4',
+      name: 'Memories of Love',
+      cover: cover(10),
+      songIds: const ['s26', 's4'],
+      createdOrder: 4,
+    ),
+    Playlist(
+      id: 'p5',
+      name: 'Pain - Ryan Jones',
+      cover: cover(17),
+      songIds: const ['s24', 's25'],
+      createdOrder: 5,
+    ),
+  ];
 
   static List<Folder> get folders => const <Folder>[
-        Folder(
-            id: 'f0',
-            name: 'Download',
-            path: 'Internal storage/Download',
-            songIds: ['s0', 's1', 's2', 's3'],
-            subfolderCount: 2),
-        Folder(
-            id: 'f1',
-            name: 'Music',
-            path: 'Internal storage/Music',
-            songIds: ['s4', 's5', 's6', 's7', 's8'],
-            subfolderCount: 4),
-        Folder(
-            id: 'f2',
-            name: 'Podcasts',
-            path: 'Internal storage/Podcasts',
-            songIds: ['s9', 's10'],
-            subfolderCount: 0),
-        Folder(
-            id: 'f3',
-            name: 'Ringtones',
-            path: 'Internal storage/Ringtones',
-            songIds: ['s11', 's12', 's13'],
-            subfolderCount: 1),
-        Folder(
-            id: 'f4',
-            name: 'Audiobooks',
-            path: 'SD card/Audiobooks',
-            songIds: ['s14', 's15'],
-            subfolderCount: 3),
-      ];
+    Folder(
+      id: 'f0',
+      name: 'Download',
+      path: 'Internal storage/Download',
+      songIds: ['s0', 's1', 's2', 's3'],
+      subfolderCount: 2,
+    ),
+    Folder(
+      id: 'f1',
+      name: 'Music',
+      path: 'Internal storage/Music',
+      songIds: ['s4', 's5', 's6', 's7', 's8'],
+      subfolderCount: 4,
+    ),
+    Folder(
+      id: 'f2',
+      name: 'Podcasts',
+      path: 'Internal storage/Podcasts',
+      songIds: ['s9', 's10'],
+      subfolderCount: 0,
+    ),
+    Folder(
+      id: 'f3',
+      name: 'Ringtones',
+      path: 'Internal storage/Ringtones',
+      songIds: ['s11', 's12', 's13'],
+      subfolderCount: 1,
+    ),
+    Folder(
+      id: 'f4',
+      name: 'Audiobooks',
+      path: 'SD card/Audiobooks',
+      songIds: ['s14', 's15'],
+      subfolderCount: 3,
+    ),
+  ];
 
   static Folder folderById(String id) =>
       folders.firstWhere((f) => f.id == id, orElse: () => folders.first);
@@ -285,21 +325,21 @@ abstract final class MusicLibrary {
       songsByIds(const ['s6', 's7', 's8', 's0', 's3', 's12']);
 
   static List<String> get initialRecentSearches => const [
-        'Ariana Grande',
-        'Morgan Wallen',
-        'Justin Bieber',
-        'Drake',
-        'Olivia Rodrigo',
-        'The Weeknd',
-        'Taylor Swift',
-        'Juice Wrld',
-        'Memories',
-      ];
+    'Ariana Grande',
+    'Morgan Wallen',
+    'Justin Bieber',
+    'Drake',
+    'Olivia Rodrigo',
+    'The Weeknd',
+    'Taylor Swift',
+    'Juice Wrld',
+    'Memories',
+  ];
 
   static List<String> lyricsFor(Song song) => switch (song.id) {
-        's0' => _starboyLyrics,
-        _ => _genericLyrics(song),
-      };
+    's0' => _starboyLyrics,
+    _ => _genericLyrics(song),
+  };
 
   static const _starboyLyrics = <String>[
     "Let a nigga brag Pitt",
@@ -316,14 +356,14 @@ abstract final class MusicLibrary {
   ];
 
   static List<String> _genericLyrics(Song song) => <String>[
-        '${song.title} — ${song.artist}',
-        'Turn the lights down low, let the record spin',
-        'Every line you sing feels like it came from within',
-        'We drive through the night with the windows down',
-        'Chasing something we cannot name',
-        'Hold on to the sound, hold on to the feeling',
-        'Nothing here is what it seems to be',
-        'So play it one more time before the morning',
-        'Before the morning takes it all away',
-      ];
+    '${song.title} — ${song.artist}',
+    'Turn the lights down low, let the record spin',
+    'Every line you sing feels like it came from within',
+    'We drive through the night with the windows down',
+    'Chasing something we cannot name',
+    'Hold on to the sound, hold on to the feeling',
+    'Nothing here is what it seems to be',
+    'So play it one more time before the morning',
+    'Before the morning takes it all away',
+  ];
 }

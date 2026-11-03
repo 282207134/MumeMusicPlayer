@@ -49,13 +49,17 @@ class ShareAppScreen extends StatelessWidget {
           Text(
             'Loved the vibe? Send Mume to a friend.',
             style: AppTypography.heading(
-                AppTypography.h5, color: context.inkPrimary),
+              AppTypography.h5,
+              color: context.inkPrimary,
+            ),
           ),
           const SizedBox(height: Insets.gapMd),
           Text(
             'Share your invite link and you both unlock a free week of Premium audio the moment they install the app.',
-            style:
-                AppTypography.body(AppTypography.bodyLarge, color: context.inkMuted),
+            style: AppTypography.body(
+              AppTypography.bodyLarge,
+              color: context.inkMuted,
+            ),
           ),
           const SizedBox(height: Insets.gapXl),
           PrimaryPillButton(

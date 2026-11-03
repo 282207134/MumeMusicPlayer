@@ -63,7 +63,7 @@ class Playlist {
     required this.cover,
     List<String>? songIds,
     this.createdOrder = 0,
-  }) : songIds = songIds ?? <String>[];
+  }) : songIds = List.of(songIds ?? const <String>[]);
 
   final String id;
   final String name;
@@ -95,3 +95,9 @@ String formatClock(Duration d) {
   if (d.inHours > 0) return '${d.inHours}:$minutes:$seconds';
   return '$minutes:$seconds';
 }
+
+/// `01:25:43` — the zero-padded running total the detail headers print.
+String formatTotal(Duration d) =>
+    '${d.inHours.toString().padLeft(2, '0')}:'
+    '${d.inMinutes.remainder(60).toString().padLeft(2, '0')}:'
+    '${d.inSeconds.remainder(60).toString().padLeft(2, '0')}';

@@ -35,7 +35,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Text(
             'Choose what Mume is allowed to ping you about.',
             style: AppTypography.body(
-                AppTypography.bodyLarge, color: context.inkMuted),
+              AppTypography.bodyLarge,
+              color: context.inkMuted,
+            ),
           ),
           const SizedBox(height: Insets.gapXl),
           const SectionHeader(title: 'New content'),

@@ -55,8 +55,10 @@ class AppWordmark extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: AppTypography.heading(AppTypography.h4,
-                color: Theme.of(context).textTheme.bodyLarge?.color),
+            style: AppTypography.heading(
+              AppTypography.h4,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
           ),
         ),
         if (onSearch != null)
@@ -75,20 +77,22 @@ class CoverArt extends StatelessWidget {
   const CoverArt({
     super.key,
     required this.asset,
-    this.size = Insets.coverTile,
+    this.size,
     this.radius = Insets.radiusLg,
     this.circular = false,
   });
 
   final String asset;
-  final double size;
+
+  /// Square edge in logical pixels; omit to fill the incoming constraints.
+  final double? size;
   final double radius;
   final bool circular;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(circular ? size : radius),
+      borderRadius: BorderRadius.circular(circular ? size! : radius),
       child: Image.asset(
         asset,
         width: size,

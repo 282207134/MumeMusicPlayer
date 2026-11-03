@@ -67,7 +67,7 @@ class CountSortBar extends StatelessWidget {
 
   final String count;
   final String sortLabel;
-  final VoidCallback? onSort;
+  final ValueChanged<BuildContext>? onSort;
 
   @override
   Widget build(BuildContext context) {
@@ -78,30 +78,39 @@ class CountSortBar extends StatelessWidget {
           Expanded(
             child: Text(
               count,
-              style: AppTypography.heading(AppTypography.h5,
-                  color: context.inkPrimary),
+              style: AppTypography.heading(
+                AppTypography.h5,
+                color: context.inkPrimary,
+              ),
             ),
           ),
-          InkWell(
-            borderRadius: BorderRadius.circular(Insets.radiusSm),
-            onTap: onSort,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: Insets.gapSm, vertical: Insets.gapSm),
-              child: Row(
-                children: [
-                  Text(
-                    sortLabel,
-                    style: AppTypography.body(
-                      AppTypography.bodyXLarge,
-                      weight: FontWeight.w700,
-                      color: AppColors.primary,
+          Builder(
+            builder: (anchor) => InkWell(
+              borderRadius: BorderRadius.circular(Insets.radiusSm),
+              onTap: onSort == null ? null : () => onSort!(anchor),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Insets.gapSm,
+                  vertical: Insets.gapSm,
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      sortLabel,
+                      style: AppTypography.body(
+                        AppTypography.bodyXLarge,
+                        weight: FontWeight.w700,
+                        color: AppColors.primary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: Insets.gapSm),
-                  const Icon(Icons.swap_vert_rounded,
-                      color: AppColors.primary, size: 22),
-                ],
+                    const SizedBox(width: Insets.gapSm),
+                    const Icon(
+                      Icons.swap_vert_rounded,
+                      color: AppColors.primary,
+                      size: 22,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -111,7 +120,8 @@ class CountSortBar extends StatelessWidget {
   }
 }
 
-/// Cover + title + `artist | duration` + play badge + overflow menu.
+/// Cover + title + artist + play badge + overflow menu. Only the Home song
+/// list (`06`) appends the track length; every other board is artist-only.
 class SongTile extends StatelessWidget {
   const SongTile({
     super.key,
@@ -120,7 +130,7 @@ class SongTile extends StatelessWidget {
     this.onTap,
     this.onPlay,
     this.onMenu,
-    this.trailingText,
+    this.showDuration = false,
     this.showPlayBadge = true,
     this.coverSize = Insets.coverTile,
   });
@@ -130,7 +140,7 @@ class SongTile extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onPlay;
   final VoidCallback? onMenu;
-  final String? trailingText;
+  final bool showDuration;
   final bool showPlayBadge;
   final double coverSize;
 
@@ -142,7 +152,11 @@ class SongTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: Insets.gapMd),
         child: Row(
           children: [
-            CoverArt(asset: song.cover, size: coverSize),
+            CoverArt(
+              asset: song.cover,
+              size: coverSize,
+              radius: Insets.radiusXl,
+            ),
             const SizedBox(width: Insets.gapLg),
             Expanded(
               child: Column(
@@ -160,7 +174,7 @@ class SongTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    _subtitle(context),
+                    _subtitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.body(
@@ -175,8 +189,11 @@ class SongTile extends StatelessWidget {
             if (showPlayBadge)
               PlayBadge(playing: active, onPressed: onPlay)
             else if (active)
-              const Icon(Icons.equalizer_rounded,
-                  color: AppColors.primary, size: 22),
+              const Icon(
+                Icons.equalizer_rounded,
+                color: AppColors.primary,
+                size: 22,
+              ),
             if (onMenu != null)
               GhostIconButton(
                 icon: Icons.more_vert_rounded,
@@ -190,16 +207,13 @@ class SongTile extends StatelessWidget {
     );
   }
 
-  String _subtitle(BuildContext context) {
-    final parts = <String>[
-      song.artist,
-      trailingText ?? '${song.durationLabel} mins',
-    ];
-    return parts.join('  |  ');
-  }
+  String get _subtitle => showDuration
+      ? '${song.artist}  |  ${song.durationLabel} mins'
+      : song.artist;
 }
 
-/// Playlist row: artwork, name, `n songs`, optional menu.
+/// Playlist row: artwork, name, `n songs`, optional menu. `circular` turns the
+/// artwork into the disc the artist board uses.
 class PlaylistTile extends StatelessWidget {
   const PlaylistTile({
     super.key,
@@ -209,7 +223,8 @@ class PlaylistTile extends StatelessWidget {
     this.onTap,
     this.onMenu,
     this.trailing,
-    this.coverSize = 64,
+    this.circular = false,
+    this.coverSize = Insets.coverTile,
   });
 
   final String title;
@@ -218,6 +233,7 @@ class PlaylistTile extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onMenu;
   final Widget? trailing;
+  final bool circular;
   final double coverSize;
 
   @override
@@ -247,8 +263,10 @@ class PlaylistTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: AppTypography.body(AppTypography.bodyMedium,
-                        color: context.inkMuted),
+                    style: AppTypography.body(
+                      AppTypography.bodyMedium,
+                      color: context.inkMuted,
+                    ),
                   ),
                 ],
               ),
@@ -259,7 +277,8 @@ class PlaylistTile extends StatelessWidget {
                     : GhostIconButton(
                         icon: Icons.more_vert_rounded,
                         onPressed: onMenu,
-                        size: 22)),
+                        size: 22,
+                      )),
           ],
         ),
       ),
@@ -342,7 +361,10 @@ class AlbumCell extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CoverArt(asset: cover, size: double.infinity, radius: Insets.radiusXl),
+          AspectRatio(
+            aspectRatio: 1,
+            child: CoverArt(asset: cover, radius: Insets.radiusXl),
+          ),
           const SizedBox(height: Insets.gapMd),
           Text(
             title,
@@ -358,13 +380,40 @@ class AlbumCell extends StatelessWidget {
             artist,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: AppTypography.body(AppTypography.bodyMedium,
-                color: context.inkMuted),
+            style: AppTypography.body(
+              AppTypography.bodyMedium,
+              color: context.inkMuted,
+            ),
           ),
         ],
       ),
     );
   }
+}
+
+/// The kit's chunky orange folder mark with the minus bar punched out. Used at
+/// list-row size on Home and as the `18` hero.
+class FolderGlyph extends StatelessWidget {
+  const FolderGlyph({super.key, this.size = Insets.coverTile});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: size,
+    height: size,
+    child: Stack(
+      alignment: Alignment.center,
+      children: [
+        Icon(Icons.folder_rounded, size: size, color: AppColors.primary),
+        Icon(
+          Icons.remove_rounded,
+          size: size * 0.36,
+          color: context.pageBackground,
+        ),
+      ],
+    ),
+  );
 }
 
 /// `→ Play Next` style row inside the option sheets.
@@ -386,8 +435,7 @@ class OptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        destructive ? AppColors.error : (context.inkPrimary);
+    final color = destructive ? AppColors.error : (context.inkPrimary);
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -467,8 +515,11 @@ class SettingTile extends StatelessWidget {
                 ),
               ),
             trailing ??
-                Icon(Icons.arrow_forward_ios_rounded,
-                    size: 16, color: context.inkSoft),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 16,
+                  color: context.inkSoft,
+                ),
           ],
         ),
       ),
@@ -512,15 +563,19 @@ class EmptyState extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: AppTypography.heading(AppTypography.h5,
-                  color: context.inkPrimary),
+              style: AppTypography.heading(
+                AppTypography.h5,
+                color: context.inkPrimary,
+              ),
             ),
             const SizedBox(height: Insets.gapMd),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTypography.body(AppTypography.bodyLarge,
-                  color: context.inkMuted),
+              style: AppTypography.body(
+                AppTypography.bodyLarge,
+                color: context.inkMuted,
+              ),
             ),
             if (action != null) ...[
               const SizedBox(height: Insets.gapXl),

@@ -26,7 +26,7 @@ class PlayerScreen extends StatelessWidget {
     final song = player.current;
 
     return Scaffold(
-      appBar: PageHeaderActions(title: song?.album ?? 'Now Playing'),
+      appBar: const PageHeaderActions(),
       body: SafeArea(
         top: false,
         child: song == null
@@ -37,7 +37,11 @@ class PlayerScreen extends StatelessWidget {
               )
             : ListView(
                 padding: const EdgeInsets.fromLTRB(
-                    Insets.page, 0, Insets.page, Insets.gap2xl),
+                  Insets.page,
+                  0,
+                  Insets.page,
+                  Insets.gap2xl,
+                ),
                 children: [
                   Center(
                     child: Hero(
@@ -53,15 +57,19 @@ class PlayerScreen extends StatelessWidget {
                   Text(
                     song.title,
                     textAlign: TextAlign.center,
-                    style: AppTypography.heading(AppTypography.h4,
-                        color: context.inkPrimary),
+                    style: AppTypography.heading(
+                      AppTypography.h4,
+                      color: context.inkPrimary,
+                    ),
                   ),
                   const SizedBox(height: Insets.gapSm),
                   Text(
                     song.artist,
                     textAlign: TextAlign.center,
-                    style: AppTypography.body(AppTypography.bodyXLarge,
-                        color: context.inkMuted),
+                    style: AppTypography.body(
+                      AppTypography.bodyXLarge,
+                      color: context.inkMuted,
+                    ),
                   ),
                   const SizedBox(height: Insets.gapXl),
                   const SeekBar(),
@@ -71,8 +79,10 @@ class PlayerScreen extends StatelessWidget {
                   const SecondaryControlsRow(),
                   const SizedBox(height: Insets.gapXl),
                   Divider(color: context.separatorColor),
-                  LyricsPreview(onExpand: () =>
-                      Navigator.of(context).pushNamed(Routes.lyrics)),
+                  LyricsPreview(
+                    onExpand: () =>
+                        Navigator.of(context).pushNamed(Routes.lyrics),
+                  ),
                 ],
               ),
       ),
@@ -96,20 +106,29 @@ class SeekBar extends StatelessWidget {
               .clamp(0, 1),
           onChanged: total == 0
               ? null
-              : (v) =>
-                  player.seek(Duration(milliseconds: (v * total).round())),
+              : (v) => player.seek(Duration(milliseconds: (v * total).round())),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: Insets.gapSm),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(formatClock(player.position),
-                  style: AppTypography.body(AppTypography.bodyLarge,
-                      weight: FontWeight.w600, color: context.inkPrimary)),
-              Text(player.durationLabel,
-                  style: AppTypography.body(AppTypography.bodyLarge,
-                      weight: FontWeight.w600, color: context.inkMuted)),
+              Text(
+                formatClock(player.position),
+                style: AppTypography.body(
+                  AppTypography.bodyLarge,
+                  weight: FontWeight.w600,
+                  color: context.inkPrimary,
+                ),
+              ),
+              Text(
+                player.durationLabel,
+                style: AppTypography.body(
+                  AppTypography.bodyLarge,
+                  weight: FontWeight.w600,
+                  color: context.inkMuted,
+                ),
+              ),
             ],
           ),
         ),
@@ -133,20 +152,30 @@ class TransportRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         GhostIconButton(
-            icon: Icons.skip_previous_rounded,
-            size: 30,
-            onPressed: player.previous),
+          icon: Icons.skip_previous_rounded,
+          size: 30,
+          onPressed: player.previous,
+        ),
         GhostIconButton(
-            icon: Icons.replay_10_rounded, size: 30, onPressed: () => player.skip(-10)),
+          icon: Icons.replay_10_rounded,
+          size: 30,
+          onPressed: () => player.skip(-10),
+        ),
         PlayBadge(
           playing: player.isPlaying,
           onPressed: player.toggle,
           size: 68,
         ),
         GhostIconButton(
-            icon: Icons.forward_10_rounded, size: 30, onPressed: () => player.skip(10)),
+          icon: Icons.forward_10_rounded,
+          size: 30,
+          onPressed: () => player.skip(10),
+        ),
         GhostIconButton(
-            icon: Icons.skip_next_rounded, size: 30, onPressed: player.next),
+          icon: Icons.skip_next_rounded,
+          size: 30,
+          onPressed: player.next,
+        ),
       ],
     );
   }
@@ -237,14 +266,8 @@ class LyricsPreview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
           children: [
-            Text(
-              'Lyrics',
-              style: AppTypography.heading(AppTypography.h5,
-                  color: context.inkPrimary),
-            ),
             if (onExpand != null)
               GhostIconButton(
                 icon: Icons.expand_less_rounded,
@@ -252,6 +275,13 @@ class LyricsPreview extends StatelessWidget {
                 onPressed: onExpand,
                 tooltip: 'Expand lyrics',
               ),
+            Text(
+              'Lyrics',
+              style: AppTypography.heading(
+                AppTypography.h5,
+                color: context.inkPrimary,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: Insets.gapLg),
@@ -299,10 +329,12 @@ class LyricsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final player = context.watch<PlayerController>();
     final song = player.current;
-    final lyrics = song == null ? const <String>[] : MusicLibrary.lyricsFor(song);
+    final lyrics = song == null
+        ? const <String>[]
+        : MusicLibrary.lyricsFor(song);
 
     return Scaffold(
-      appBar: const PageHeaderActions(title: 'Lyrics'),
+      appBar: const PageHeaderActions(),
       body: song == null
           ? const EmptyState(
               title: 'Nothing is playing',
@@ -311,38 +343,27 @@ class LyricsScreen extends StatelessWidget {
             )
           : ListView(
               padding: const EdgeInsets.fromLTRB(
-                  Insets.page, Insets.gapLg, Insets.page, Insets.gap2xl),
+                Insets.page,
+                Insets.gap2xl,
+                Insets.page,
+                Insets.gap2xl,
+              ),
               children: [
-                Row(
-                  children: [
-                    CoverArt(asset: song.cover, size: 52),
-                    const SizedBox(width: Insets.gapMd),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(song.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.body(
-                                  AppTypography.bodyLarge,
-                                  weight: FontWeight.w700,
-                                  color: context.inkPrimary)),
-                          Text(song.artist,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.body(
-                                  AppTypography.bodySmall,
-                                  color: context.inkMuted)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: Insets.gapXl),
                 const SeekBar(),
                 const SizedBox(height: Insets.gapLg),
                 const TransportRow(),
+                const SizedBox(height: Insets.gapLg),
+                const SecondaryControlsRow(),
+                const SizedBox(height: Insets.gapXl),
+                Divider(color: context.separatorColor),
+                const SizedBox(height: Insets.gapLg),
+                Text(
+                  'Lyrics',
+                  style: AppTypography.heading(
+                    AppTypography.h5,
+                    color: context.inkPrimary,
+                  ),
+                ),
                 const SizedBox(height: Insets.gapXl),
                 Container(
                   width: double.infinity,
@@ -356,18 +377,15 @@ class LyricsScreen extends StatelessWidget {
                     children: [
                       for (var i = 0; i < lyrics.length; i++)
                         Padding(
-                          padding:
-                              const EdgeInsets.only(bottom: Insets.gapLg),
+                          padding: const EdgeInsets.only(bottom: Insets.gapLg),
                           child: Text(
                             lyrics[i],
                             style: AppTypography.body(
                               AppTypography.bodyXLarge,
                               weight: FontWeight.w700,
-                              color: i == player.lyricLine
+                              color: i <= player.lyricLine
                                   ? AppColors.primary
-                                  : (i < player.lyricLine
-                                      ? context.inkSoft
-                                      : context.inkPrimary),
+                                  : context.inkPrimary,
                             ),
                           ),
                         ),

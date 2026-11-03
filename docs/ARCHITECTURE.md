@@ -17,7 +17,7 @@
 | UI 规范 | Material 3 + 自定义 `ThemeExtension` |
 | 字体 | Urbanist（随包 4 个字重） |
 | 平台 | Android / iOS |
-| 代码量 | 44 个 Dart 文件，约 8.8k 行 |
+| 代码量 | `lib/` 46 个 Dart 文件，约 9.5k 行；`test/` 3 个测试文件 |
 | 音频 | **模拟播放**（设计稿为纯 UI Kit，未提供音源） |
 
 界面覆盖：启动页、引导页、首页 5 个分类（Suggested / Songs / Artists / Albums / Folders）、
@@ -47,7 +47,8 @@ MumeMusicPlayer/
 │   │       ├── tiles.dart            # 歌曲/歌单/艺人/专辑/设置/选项 行组件
 │   │       ├── sheets.dart           # 底部抽屉容器 + 确认弹窗
 │   │       ├── song_option_sheet.dart# 长按歌曲的 10 项操作面板
-│   │       ├── sort_menu.dart        # 排序单选面板
+│   │       ├── detail_sections.dart  # 详情页共用的歌曲列表与操作面板
+│   │       ├── sort_menu.dart        # 右上角锚定排序菜单
 │   │       └── app_logo.dart         # Logo / 字标 / CoverArt 封面组件
 │   │
 │   ├── data/                         # 【数据与状态层】纯 Dart，不依赖 Flutter Widget
@@ -115,9 +116,9 @@ graph TD
     class DS,DP,ML state;
 ```
 
-依赖只允许 **自上而下**：`features → app/widgets → app/theme / data`。
-`data/` 不 import 任何 Widget；`app/` 不 import `features/`。
-因此新增一个界面只需要在 `features/` 下加文件 + 在 `router.dart` 注册一行。
+依赖以 **自上而下** 为主：`features → app/widgets → app/theme / data`。
+`data/` 不 import 任何 Widget；除 `router.dart` 负责组装页面外，`app/` 不反向依赖 `features/`。
+因此新增界面时，页面与共享组件保持解耦，只需在 `router.dart` 注册对应路由。
 
 ---
 
@@ -173,7 +174,7 @@ AppTypography.body(AppTypography.bodyLarge,       // w400(可覆盖), height 1.3
 | `inkMuted / inkSoft` 次要文字 | `grey600 / grey500` | `grey400 / grey600` |
 | `divider` 分隔线 | `grey200` | `dark3` |
 
-界面里通过 `BuildContext` 扩展取值，**任何组件都不写死颜色**：
+界面通过 `BuildContext` 扩展读取语义色；品牌橙等固定令牌则直接使用 `AppColors`：
 
 ```dart
 Color get inkPrimary => ink.ink;      // context.inkPrimary
@@ -256,7 +257,8 @@ Folder  { id, name, path, songIds, subfolderCount }
 | `/player` · `/player/lyrics` | PlayerScreen · LyricsScreen | 09–10 |
 | `/recently-played` | RecentlyPlayedScreen | 19 |
 | `/artist` · `/album` · `/folder` | 三类详情，参数 `MediaArgs(id)` | 14, 16, 18 |
-| `/playlist` · `/playlists/new` · `/playlists/pick` | 歌单详情 / 新建或重命名 / 加入歌单 | 27, 26, 29 |
+| `/playlist` · `/playlists/new` | 歌单详情 / 新建或重命名 | 27, 26 |
+| `/playlists/pick` · `/playlists/songs` | 加入歌单 / 向歌单添加歌曲 | 29, 27 的加歌流程 |
 | `/settings/notification` · `language` · `share` · `faq` | 设置子页 | 37–40 |
 | `/premium` → `payment` → `payment/card` → `review` → `success` | 订阅五步 | 31–36 |
 
@@ -277,9 +279,10 @@ Folder  { id, name, path, songIds, subfolderCount }
 | `page.dart` | `PageTopBar`（实现 `PreferredSizeWidget`）、`MumePage`（顶栏 + 可滚动主体 + 吸底按钮）、`PageHeaderActions` | 全部详情页 |
 | `buttons.dart` | `PrimaryPillButton`（橙色渐变 + 发光阴影）、`SoftPillButton`、`OutlinedIconButton`、`GhostIconButton`、`PlayBadge`、`UnderlineTabs` | 02–06, 09 |
 | `tiles.dart` | `SectionHeader`、`CountSortBar`、`SongTile`、`PlaylistTile`、`ArtistCell`、`AlbumCell`、`OptionTile`、`SettingTile`、`EmptyState` | 06, 12–18, 22, 30 |
-| `sheets.dart` | `MumeSheet`（带拖拽条的底部抽屉）、`SongSheetHeader`、`showMumeSheet`、`confirmDialog` | 07, 08, 13, 24, 28, 41 |
+| `sheets.dart` | `MumeSheet`（带拖拽条的底部抽屉）、`SongSheetHeader`、`showMumeSheet`、`confirmDialog` | 08, 13, 24, 41 |
 | `song_option_sheet.dart` | 长按歌曲的 10 项操作面板 + 歌曲详情弹窗 | 08 |
-| `sort_menu.dart` | 单选排序面板 | 07 |
+| `detail_sections.dart` | 艺人 / 专辑 / 文件夹 / 歌单共用的详情区与媒体操作 | 13–18, 27 |
+| `sort_menu.dart` | 右上锚定的单选排序菜单，含分隔线与选中图标 | 07 |
 | `app_logo.dart` | `AppLogo`（含徽章态）、`AppWordmark`、`CoverArt` | 01, 05 |
 
 ---
@@ -310,12 +313,16 @@ Folder  { id, name, path, songIds, subfolderCount }
 
 播放页：`Hero` 共享封面（380pt）、进度条、五个传输按钮（上一首 / 后退 10s / 播放 / 前进 10s / 下一首）、
 下排四个次级控制（倍速 / 睡眠定时 / 投屏 / 更多），底部是歌词预览卡；
-点击预览卡进入全屏歌词页，当前行高亮为橙色，已划过的行降为 `inkSoft`。
+点击预览卡进入歌词页，不重复绘制大封面，保留进度与传输控制；当前行及此前歌词高亮为橙色。
+设计稿 11 则是 Home Songs 列表叠加迷你播放器，不是另一个播放详情页。
 
 ### 8.4 操作面板与排序
 
 ![sort](screenshots/light/07_home_songs_sort.png)
 ![option](screenshots/light/08_home_song_option.png)
+
+排序使用右上角锚定菜单；歌曲、艺人、专辑和文件夹操作复用底部面板，其中媒体操作支持
+Play、Play Next、加入队列、批量加入歌单和分享。
 
 ### 8.5 搜索
 
@@ -328,6 +335,9 @@ Folder  { id, name, path, songIds, subfolderCount }
 
 ![playlists](screenshots/light/25_playlists.png)
 ![settings](screenshots/light/30_settings.png)
+
+歌单详情支持 Date Added 排序、右侧方形加歌按钮，以及顶栏圆钮中的
+Edit Playlist Info / Delete Playlist 锚定菜单；新建与编辑共用表单。
 
 ### 8.7 Premium 订阅流
 
@@ -344,8 +354,17 @@ Light / Dark 两套主题共用同一份代码，仅 `AppInk` 换值：
 
 ### 8.9 实机截图
 
-模拟器（`emulator-5554`，Android 15）实拍见 `docs/screenshots/app/`，
-文件名与设计稿编号一一对应，可直接左右对照验收。
+以下图片均来自专用 AVD `mume_review`（`emulator-5556`，Android 15）中的实际导航与操作，
+不是设计稿导出图。完整文件位于 `docs/screenshots/app/`：41 张 Light 页面一一对应设计稿编号，
+另有 4 张 `*b_*` 命名的 Dark 首页、播放器、歌词与设置截图。
+
+| 首页歌曲库 | 播放器 | 歌词与传输控制 |
+| --- | --- | --- |
+| ![实机首页](screenshots/app/06_home_songs.png) | ![实机播放器](screenshots/app/09_play_song.png) | ![实机歌词](screenshots/app/10_play_song_lyric.png) |
+
+| 歌单管理 | Premium 订单确认 | Dark 设置 |
+| --- | --- | --- |
+| ![实机歌单](screenshots/app/27_playlist_details.png) | ![实机订单确认](screenshots/app/35_review_summary.png) | ![实机深色设置](screenshots/app/30b_settings_dark.png) |
 
 ---
 
@@ -369,7 +388,8 @@ Light / Dark 两套主题共用同一份代码，仅 `AppInk` 换值：
 | 14 | 艺人详情 | 26 | 新建歌单 | 40 | FAQ |
 | 27 | 歌单详情 | 28 | 歌单-操作面板 | 41 | 退出确认 |
 
-截图：`docs/screenshots/light/`、`docs/screenshots/dark/`（各 41 张，428×926）。
+设计稿截图：`docs/screenshots/light/`、`docs/screenshots/dark/`（各 41 张，428×926）。
+实机截图：`docs/screenshots/app/`（41 张 Light + 4 张 Dark，856×1852，为设计画板的 2 倍像素）。
 
 ---
 
@@ -377,15 +397,20 @@ Light / Dark 两套主题共用同一份代码，仅 `AppInk` 换值：
 
 ```bash
 flutter pub get
+flutter analyze
 
-flutter analyze          # 0 issues
-flutter test             # 数据层单测 + Widget 冒烟测试
-
-flutter run -d emulator-5554     # 或任意 Android/iOS 设备
+flutter run -d emulator-5556     # 或任意 Android/iOS 设备
+flutter build apk --release --target-platform android-x64
 ```
 
-验收路径：启动 → 引导 → 首页五个 Tab → 点歌进播放页 → 展开歌词 →
-返回长按歌曲开操作面板 → 收藏 / 歌单增删 → 搜索 → 设置切深色 → Premium 下单五步 → 退出确认。
+本机验证结果：`flutter analyze` 为 0 issues；`library_test.dart` 与 `widget_test.dart`
+共 7 项数据层和 Widget 测试通过。`route_render_test.dart` 定义了 26 个路由 × 2 种主题 ×
+2 种视口的 104 项渲染检查；当前 Windows Flutter 3.47.7 的 `flutter_tester` 在连续重建页面时
+会以原生 `0xC0000005` 退出并显示 `did not complete`，这不是 Dart 断言失败。实机已逐项跑通并截图。
+
+实机验收路径：启动 → 引导 → 首页五个 Tab → 点歌进播放页 → 展开歌词 →
+歌曲 / 艺人 / 专辑 / 文件夹操作面板 → 收藏 / 歌单增删 → 搜索 → 设置切深色 →
+Premium 银行卡下单五步 → 通知 / 语言 / 分享 / FAQ → 退出确认。
 
 ---
 

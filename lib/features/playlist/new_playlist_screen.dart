@@ -63,8 +63,12 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
           // create-time choice; while editing the cover is shown as-is.
           if (editing) ...[
             Center(
-                child: CoverArt(
-                    asset: _cover, size: 132, radius: Insets.radiusXl)),
+              child: CoverArt(
+                asset: _cover,
+                size: 132,
+                radius: Insets.radiusXl,
+              ),
+            ),
             const SizedBox(height: Insets.gapXl),
           ] else ...[
             const SectionHeader(title: 'Playlist Cover', titleSize: 18),
@@ -104,7 +108,9 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: selected ? AppColors.primary : context.separatorColor,
+                    color: selected
+                        ? AppColors.primary
+                        : context.separatorColor,
                     width: selected ? 3 : 1,
                   ),
                 ),

@@ -36,7 +36,9 @@ class PrimaryPillButton extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
-            colors: enabled ? gradient : const [AppColors.disabledButton, AppColors.disabledButton],
+            colors: enabled
+                ? gradient
+                : const [AppColors.disabledButton, AppColors.disabledButton],
           ),
           boxShadow: enabled
               ? [
@@ -212,7 +214,7 @@ class PlayBadge extends StatelessWidget {
     super.key,
     required this.playing,
     this.onPressed,
-    this.size = 40,
+    this.size = 28,
   });
 
   final bool playing;

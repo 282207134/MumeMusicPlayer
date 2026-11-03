@@ -76,14 +76,16 @@ class LanguageScreen extends StatelessWidget {
                   ),
                 ),
                 if (selected)
-                  const Icon(Icons.check_rounded,
-                      color: AppColors.primary, size: 26),
+                  const Icon(
+                    Icons.check_rounded,
+                    color: AppColors.primary,
+                    size: 26,
+                  ),
               ],
             ),
           ),
         ),
-        if (dividerAfter)
-          Divider(height: 1, color: context.separatorColor),
+        if (dividerAfter) Divider(height: 1, color: context.separatorColor),
       ],
     );
   }

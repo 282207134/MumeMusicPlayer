@@ -24,7 +24,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  void _setDarkMode(bool value) => context.read<LibraryStore>().darkMode = value;
+  void _setDarkMode(bool value) =>
+      context.read<LibraryStore>().darkMode = value;
 
   Future<void> _openLanguage() async {
     await Navigator.of(context).pushNamed(Routes.language);
@@ -130,36 +131,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   List<Widget> _changeLog() => [
-        for (final entry in const [
-          ('v2.4.0', 'Offline lyrics sync, a redesigned mini player and up to 3× faster library scanning.'),
-          ('v2.3.1', 'Fixed playback not resuming after a Bluetooth headset reconnects.'),
-          ('v2.3.0', 'Added the Folders view, Dark Mode and in-app invites.'),
-        ]) ...[
-          const SizedBox(height: Insets.gapMd),
-          Text(entry.$1,
-              style: AppTypography.body(AppTypography.bodyXLarge,
-                  weight: FontWeight.w700, color: AppColors.primary)),
-          const SizedBox(height: Insets.gapSm),
-          Text(entry.$2,
-              style: AppTypography.body(AppTypography.bodyLarge,
-                  color: context.inkMuted)),
-        ],
-      ];
+    for (final entry in const [
+      (
+        'v2.4.0',
+        'Offline lyrics sync, a redesigned mini player and up to 3× faster library scanning.',
+      ),
+      (
+        'v2.3.1',
+        'Fixed playback not resuming after a Bluetooth headset reconnects.',
+      ),
+      ('v2.3.0', 'Added the Folders view, Dark Mode and in-app invites.'),
+    ]) ...[
+      const SizedBox(height: Insets.gapMd),
+      Text(
+        entry.$1,
+        style: AppTypography.body(
+          AppTypography.bodyXLarge,
+          weight: FontWeight.w700,
+          color: AppColors.primary,
+        ),
+      ),
+      const SizedBox(height: Insets.gapSm),
+      Text(
+        entry.$2,
+        style: AppTypography.body(
+          AppTypography.bodyLarge,
+          color: context.inkMuted,
+        ),
+      ),
+    ],
+  ];
 
   List<Widget> _privacy() => [
-        const SizedBox(height: Insets.gapMd),
-        for (final line in const [
-          'Your music, playlists and settings stay on this device. Mume never uploads the audio files you already own.',
-          'If you subscribe to Premium we store your plan and the email you sign in with so we can restore it for you.',
-          'Anonymous crash reports may be sent to help us fix bugs — they never contain your media or file names.',
-          'You can erase everything Mume keeps locally at any time from Backup → Reset library.',
-        ]) ...[
-          Text('•  $line',
-              style: AppTypography.body(AppTypography.bodyLarge,
-                  color: context.inkMuted)),
-          const SizedBox(height: Insets.gapLg),
-        ],
-      ];
+    const SizedBox(height: Insets.gapMd),
+    for (final line in const [
+      'Your music, playlists and settings stay on this device. Mume never uploads the audio files you already own.',
+      'If you subscribe to Premium we store your plan and the email you sign in with so we can restore it for you.',
+      'Anonymous crash reports may be sent to help us fix bugs — they never contain your media or file names.',
+      'You can erase everything Mume keeps locally at any time from Backup → Reset library.',
+    ]) ...[
+      Text(
+        '•  $line',
+        style: AppTypography.body(
+          AppTypography.bodyLarge,
+          color: context.inkMuted,
+        ),
+      ),
+      const SizedBox(height: Insets.gapLg),
+    ],
+  ];
 }
 
 /// Logo + `Settings` + the circular theme toggle printed top-right.
@@ -179,7 +199,9 @@ class _Header extends StatelessWidget {
           child: Text(
             'Settings',
             style: AppTypography.heading(
-                AppTypography.h4, color: context.inkPrimary),
+              AppTypography.h4,
+              color: context.inkPrimary,
+            ),
           ),
         ),
         OutlinedIconButton(
@@ -207,7 +229,7 @@ class _PremiumBanner extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(Insets.radiusXl),
           child: Container(
-            height: 200,
+            height: 212,
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(Insets.radiusXl),
@@ -242,30 +264,39 @@ class _PremiumBanner extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.heading(
-                            AppTypography.h4, color: AppColors.white),
+                          AppTypography.h4,
+                          color: AppColors.white,
+                        ),
                       ),
                       const SizedBox(height: Insets.gapSm),
                       Text(
                         'Enjoy listening songs with better audio quality, without restrictions, and without ads.',
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTypography.body(AppTypography.bodySmall,
-                            color: AppColors.white.withValues(alpha: 0.92)),
+                        style: AppTypography.body(
+                          AppTypography.bodySmall,
+                          color: AppColors.white.withValues(alpha: 0.92),
+                        ),
                       ),
                       const SizedBox(height: Insets.gapLg),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: Insets.gapXl, vertical: Insets.gapMd),
+                          horizontal: Insets.gapXl,
+                          vertical: Insets.gapMd,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.white,
-                          borderRadius:
-                              BorderRadius.circular(Insets.radiusPill),
+                          borderRadius: BorderRadius.circular(
+                            Insets.radiusPill,
+                          ),
                         ),
                         child: Text(
                           'Get Premium',
-                          style: AppTypography.body(AppTypography.bodyMedium,
-                              weight: FontWeight.w700,
-                              color: AppColors.primary),
+                          style: AppTypography.body(
+                            AppTypography.bodyMedium,
+                            weight: FontWeight.w700,
+                            color: AppColors.primary,
+                          ),
                         ),
                       ),
                     ],

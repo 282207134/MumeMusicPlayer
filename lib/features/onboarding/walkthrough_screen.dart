@@ -23,11 +23,18 @@ class WalkthroughScreen extends StatefulWidget {
 
 class _WalkthroughScreenState extends State<WalkthroughScreen> {
   static const _steps = <_Step>[
-    _Step('assets/images/walkthrough_1.png',
-        'User friendly mp3 music player for your device'),
-    _Step('assets/images/walkthrough_2.png',
-        'Find your songs by name, artist, album and more'),
-    _Step('assets/images/walkthrough_3.png', 'Listen to the best audio & music with Mume now!'),
+    _Step(
+      'assets/images/walkthrough_1.png',
+      'User friendly mp3 music player for your device',
+    ),
+    _Step(
+      'assets/images/walkthrough_2.png',
+      'Find your songs by name, artist, album and more',
+    ),
+    _Step(
+      'assets/images/walkthrough_3.png',
+      'Listen to the best audio & music with Mume now!',
+    ),
   ];
 
   final _controller = PageController();
@@ -69,12 +76,12 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
           ),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(
-                Insets.gap2xl, Insets.gap2xl, Insets.gap2xl, Insets.gapXl),
+            padding: const EdgeInsets.fromLTRB(48, 56, 48, 40),
             decoration: BoxDecoration(
               color: isDark ? AppColors.dark2 : AppColors.white,
               borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(36)),
+                top: Radius.circular(36),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.06),
@@ -88,12 +95,14 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                 Text(
                   _steps[_page].headline,
                   textAlign: TextAlign.center,
-                  style: AppTypography.heading(AppTypography.h2 * 0.85,
-                      color: isDark ? AppColors.white : AppColors.grey900),
+                  style: AppTypography.heading(
+                    AppTypography.h2,
+                    color: isDark ? AppColors.white : AppColors.grey900,
+                  ),
                 ),
-                const SizedBox(height: Insets.gapXl),
+                const SizedBox(height: Insets.gapXl * 1.5),
                 _Indicator(count: _steps.length, index: _page),
-                const SizedBox(height: Insets.gapXl),
+                const SizedBox(height: Insets.gapXl * 1.5),
                 PrimaryPillButton(
                   label: _isLast ? 'Get Started' : 'Next',
                   onPressed: _advance,
@@ -116,31 +125,43 @@ class _Hero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            top: constraints.maxHeight * 0.18,
-            child: Container(
-              width: constraints.maxHeight * 0.72,
-              height: constraints.maxHeight * 0.72,
-              decoration: const BoxDecoration(
-                  shape: BoxShape.circle, color: AppColors.primary),
+      builder: (context, constraints) {
+        final h = constraints.maxHeight;
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              top: h * 0.24,
+              child: Container(
+                width: h * 0.44,
+                height: h * 0.44,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primary,
+                ),
+              ),
             ),
-          ),
-          const Positioned(top: Insets.gapXl, left: 44, child: _Speck(26)),
-          const Positioned(top: 72, right: 64, child: _Speck(16)),
-          const Positioned(top: 34, left: 150, child: _Speck(11)),
-          const Positioned(bottom: 90, left: 26, child: _Speck(9)),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: constraints.maxHeight * 0.94,
-            child: Image.asset(image, fit: BoxFit.cover, filterQuality: FilterQuality.medium),
-          ),
-        ],
-      ),
+            const Positioned(top: Insets.gapXl, left: 44, child: _Speck(26)),
+            const Positioned(top: 72, right: 64, child: _Speck(16)),
+            const Positioned(top: 34, left: 150, child: _Speck(11)),
+            const Positioned(bottom: 90, left: 26, child: _Speck(9)),
+            // The cut-outs are different shapes, so each page pins its own
+            // height and keeps the person centred on the disc.
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: h * 0.72,
+              child: Image.asset(
+                image,
+                fit: BoxFit.contain,
+                alignment: const Alignment(0, 0.55),
+                filterQuality: FilterQuality.medium,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -152,11 +173,13 @@ class _Speck extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: const BoxDecoration(
-            shape: BoxShape.circle, color: AppColors.primary),
-      );
+    width: size,
+    height: size,
+    decoration: const BoxDecoration(
+      shape: BoxShape.circle,
+      color: AppColors.primary,
+    ),
+  );
 }
 
 class _Indicator extends StatelessWidget {
@@ -167,8 +190,9 @@ class _Indicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final inactive =
-        Theme.of(context).brightness == Brightness.dark ? AppColors.dark3 : AppColors.grey300;
+    final inactive = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.dark3
+        : AppColors.grey300;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

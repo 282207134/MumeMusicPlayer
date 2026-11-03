@@ -42,10 +42,13 @@ class PageTopBar extends StatelessWidget implements PreferredSizeWidget {
           ? null
           : Text(
               title!,
-              style: AppTypography.heading(AppTypography.h4,
-                  color: context.inkPrimary),
+              style: AppTypography.heading(
+                AppTypography.h4,
+                color: context.inkPrimary,
+              ),
             ),
-      leading: leading ??
+      leading:
+          leading ??
           (Navigator.of(context).canPop()
               ? Padding(
                   padding: const EdgeInsets.only(left: Insets.gapSm),
@@ -97,16 +100,18 @@ class MumePage extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: padding,
-                child: SingleChildScrollView(
-                  child: body,
-                ),
+                child: SingleChildScrollView(child: body),
               ),
             ),
             if (footer != null)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(
-                    Insets.page, Insets.gapMd, Insets.page, Insets.gapLg),
+                  Insets.page,
+                  Insets.gapMd,
+                  Insets.page,
+                  Insets.gapLg,
+                ),
                 decoration: BoxDecoration(
                   color: context.cardBackground,
                   boxShadow: [
@@ -145,8 +150,11 @@ class PageHeaderActions extends StatelessWidget implements PreferredSizeWidget {
           ? null
           : Text(
               title!,
-              style: AppTypography.body(AppTypography.bodyLarge,
-                  weight: FontWeight.w600, color: context.inkSoft),
+              style: AppTypography.body(
+                AppTypography.bodyLarge,
+                weight: FontWeight.w600,
+                color: context.inkSoft,
+              ),
             ),
       leading: Navigator.of(context).canPop()
           ? GhostIconButton(
@@ -168,4 +176,3 @@ class PageHeaderActions extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
-

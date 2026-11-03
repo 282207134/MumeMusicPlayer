@@ -33,7 +33,8 @@ class BankCard {
   static CardBrand brandOf(String digits) =>
       digits.startsWith('4') ? CardBrand.visa : CardBrand.mastercard;
 
-  String get last4 => number.length <= 4 ? number : number.substring(number.length - 4);
+  String get last4 =>
+      number.length <= 4 ? number : number.substring(number.length - 4);
 
   String get masked => '•••• •••• •••• $last4';
 
@@ -52,7 +53,10 @@ class BankCard {
     for (var i = 0; i < 16; i += 4) {
       final chunk = i >= digits.length
           ? ''
-          : digits.substring(i, (i + 4) > digits.length ? digits.length : i + 4);
+          : digits.substring(
+              i,
+              (i + 4) > digits.length ? digits.length : i + 4,
+            );
       groups.add(chunk.padRight(4, '•'));
     }
     return groups.join(' ');
@@ -99,7 +103,9 @@ class CardBrandMark extends StatelessWidget {
               width: circle,
               height: circle,
               decoration: const BoxDecoration(
-                  shape: BoxShape.circle, color: AppColors.red),
+                shape: BoxShape.circle,
+                color: AppColors.red,
+              ),
             ),
           ),
           Positioned(
@@ -129,7 +135,9 @@ class CardFormScreen extends StatefulWidget {
 
 class _CardFormScreenState extends State<CardFormScreen> {
   static final _digitsOnly = FilteringTextInputFormatter.digitsOnly;
-  static final _nameOnly = FilteringTextInputFormatter.allow(RegExp(r"[A-Za-z .'-]"));
+  static final _nameOnly = FilteringTextInputFormatter.allow(
+    RegExp(r"[A-Za-z .'-]"),
+  );
 
   final _number = TextEditingController();
   final _expiry = TextEditingController();
@@ -183,11 +191,13 @@ class _CardFormScreenState extends State<CardFormScreen> {
 
   void _save() {
     if (!_valid) return;
-    Navigator.of(context).pop(BankCard(
-      holder: _holder.text.trim(),
-      number: _numberDigits,
-      expiry: _expiry.text,
-    ));
+    Navigator.of(context).pop(
+      BankCard(
+        holder: _holder.text.trim(),
+        number: _numberDigits,
+        expiry: _expiry.text,
+      ),
+    );
   }
 
   @override
@@ -196,7 +206,10 @@ class _CardFormScreenState extends State<CardFormScreen> {
     // has to be read from this context (above the Scaffold) and pushed back
     // into the bottom bar padding.
     final keyboardInset =
-        (MediaQuery.viewInsetsOf(context).bottom - Insets.gapLg).clamp(0.0, 400.0);
+        (MediaQuery.viewInsetsOf(context).bottom - Insets.gapLg).clamp(
+          0.0,
+          400.0,
+        );
 
     return MumePage(
       topBar: PageTopBar(
@@ -267,7 +280,10 @@ class _CardFormScreenState extends State<CardFormScreen> {
                   hint: '123',
                   keyboardType: TextInputType.number,
                   obscureText: true,
-                  inputFormatters: [_digitsOnly, LengthLimitingTextInputFormatter(3)],
+                  inputFormatters: [
+                    _digitsOnly,
+                    LengthLimitingTextInputFormatter(3),
+                  ],
                   error: _cvv.text.isEmpty || _cvvValid
                       ? null
                       : 'CVV has 3 digits',
@@ -340,10 +356,7 @@ class _CardPreview extends StatelessWidget {
                     color: AppColors.white,
                   ),
                 ),
-                CardBrandMark(
-                  brand: BankCard.brandOf(number),
-                  size: 52,
-                ),
+                CardBrandMark(brand: BankCard.brandOf(number), size: 52),
               ],
             ),
             const Spacer(),

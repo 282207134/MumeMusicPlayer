@@ -14,8 +14,13 @@ abstract final class Insets {
   static const radiusXl = 24.0;
   static const radiusPill = 999.0;
 
-  static const coverTile = 56.0;
+  static const coverTile = 78.0;
   static const coverGrid = 110.0;
   static const coverHero = 380.0;
+
+  /// Artist / album / playlist artwork, measured off boards `14` `16` `27`.
+  static const coverDetail = 250.0;
+  static const radiusDetailCover = 48.0;
+
   static const navBarHeight = 72.0;
 }

@@ -60,8 +60,10 @@ class _FaqScreenState extends State<FaqScreen> {
     final q = _query.trim().toLowerCase();
     if (q.isEmpty) return _faqs;
     return _faqs
-        .where((f) =>
-            f.$1.toLowerCase().contains(q) || f.$2.toLowerCase().contains(q))
+        .where(
+          (f) =>
+              f.$1.toLowerCase().contains(q) || f.$2.toLowerCase().contains(q),
+        )
         .toList();
   }
 
@@ -74,16 +76,27 @@ class _FaqScreenState extends State<FaqScreen> {
           Text(
             'Tell us what happened and a human from the Mume team replies within one business day.',
             style: AppTypography.body(
-                AppTypography.bodyLarge, color: context.inkMuted),
+              AppTypography.bodyLarge,
+              color: context.inkMuted,
+            ),
           ),
           const SizedBox(height: Insets.gapXl),
-          Text('support@mume.app',
-              style: AppTypography.body(AppTypography.bodyXLarge,
-                  weight: FontWeight.w700, color: AppColors.primary)),
+          Text(
+            'support@mume.app',
+            style: AppTypography.body(
+              AppTypography.bodyXLarge,
+              weight: FontWeight.w700,
+              color: AppColors.primary,
+            ),
+          ),
           const SizedBox(height: Insets.gapSm),
-          Text('Mon–Fri, 9:00–18:00 (GMT+1)',
-              style: AppTypography.body(
-                  AppTypography.bodyMedium, color: context.inkMuted)),
+          Text(
+            'Mon–Fri, 9:00–18:00 (GMT+1)',
+            style: AppTypography.body(
+              AppTypography.bodyMedium,
+              color: context.inkMuted,
+            ),
+          ),
         ],
       ),
     );
@@ -122,7 +135,9 @@ class _FaqScreenState extends State<FaqScreen> {
                 'No answers match “$_query”.',
                 textAlign: TextAlign.center,
                 style: AppTypography.body(
-                    AppTypography.bodyLarge, color: context.inkMuted),
+                  AppTypography.bodyLarge,
+                  color: context.inkMuted,
+                ),
               ),
             )
           else
@@ -131,8 +146,8 @@ class _FaqScreenState extends State<FaqScreen> {
                 question: question,
                 answer: answer,
                 expanded: _open == question,
-                onTap: () => setState(
-                    () => _open = _open == question ? null : question),
+                onTap: () =>
+                    setState(() => _open = _open == question ? null : question),
               ),
           const SizedBox(height: Insets.gap2xl),
         ],
@@ -208,8 +223,10 @@ class _FaqTile extends StatelessWidget {
                           padding: const EdgeInsets.only(top: Insets.gapMd),
                           child: Text(
                             answer,
-                            style: AppTypography.body(AppTypography.bodyMedium,
-                                color: context.inkMuted),
+                            style: AppTypography.body(
+                              AppTypography.bodyMedium,
+                              color: context.inkMuted,
+                            ),
                           ),
                         )
                       : const SizedBox(width: double.infinity),

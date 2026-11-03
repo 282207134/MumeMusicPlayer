@@ -7,22 +7,22 @@ enum SongSort { ascending, descending, recent, duration, title }
 
 extension SongSortLabel on SongSort {
   String get label => switch (this) {
-        SongSort.ascending => 'Ascending',
-        SongSort.descending => 'Descending',
-        SongSort.recent => 'Recently Added',
-        SongSort.duration => 'Duration',
-        SongSort.title => 'Title',
-      };
+    SongSort.ascending => 'Ascending',
+    SongSort.descending => 'Descending',
+    SongSort.recent => 'Recently Added',
+    SongSort.duration => 'Duration',
+    SongSort.title => 'Title',
+  };
 }
 
 /// Everything the user can change about the library itself: what is liked,
 /// which playlists exist, sort choices, settings switches.
 class LibraryStore extends ChangeNotifier {
   LibraryStore()
-      : _favorites = <String>{'s0', 's6', 's8', 's12', 's22'},
-        _recentlyPlayed = <String>['s7', 's8', 's0', 's12', 's3', 's19'],
-        playlists = MusicLibrary.initialPlaylists(),
-        _recentSearches = MusicLibrary.initialRecentSearches.toList();
+    : _favorites = <String>{'s0', 's6', 's8', 's12', 's22'},
+      _recentlyPlayed = <String>['s7', 's8', 's0', 's12', 's3', 's19'],
+      playlists = MusicLibrary.initialPlaylists(),
+      _recentSearches = MusicLibrary.initialRecentSearches.toList();
 
   final Set<String> _favorites;
   final List<String> _recentlyPlayed;
@@ -74,7 +74,8 @@ class LibraryStore extends ChangeNotifier {
     final trimmed = query.trim();
     if (trimmed.isEmpty) return;
     _recentSearches.removeWhere(
-        (q) => q.toLowerCase() == trimmed.toLowerCase());
+      (q) => q.toLowerCase() == trimmed.toLowerCase(),
+    );
     _recentSearches.insert(0, trimmed);
     notifyListeners();
   }
@@ -147,13 +148,14 @@ class LibraryStore extends ChangeNotifier {
       .toSet();
 
   List<Song> sortedSongs(List<Song> source) => switch (songSort) {
-        SongSort.ascending => [...source]..sort(_byTitle),
-        SongSort.descending => [...source]..sort((a, b) => _byTitle(b, a)),
-        SongSort.recent => [...source].reversed.toList(),
-        SongSort.duration => [...source]
-          ..sort((a, b) => b.duration.compareTo(a.duration)),
-        SongSort.title => [...source]..sort(_byTitle),
-      };
+    SongSort.ascending => [...source]..sort(_byTitle),
+    SongSort.descending => [...source]..sort((a, b) => _byTitle(b, a)),
+    SongSort.recent => [...source].reversed.toList(),
+    SongSort.duration => [
+      ...source,
+    ]..sort((a, b) => b.duration.compareTo(a.duration)),
+    SongSort.title => [...source]..sort(_byTitle),
+  };
 
   static int _byTitle(Song a, Song b) =>
       a.title.toLowerCase().compareTo(b.title.toLowerCase());
@@ -162,10 +164,12 @@ class LibraryStore extends ChangeNotifier {
     final q = query.trim().toLowerCase();
     if (q.isEmpty) return const [];
     return MusicLibrary.songs
-        .where((s) =>
-            s.title.toLowerCase().contains(q) ||
-            s.artist.toLowerCase().contains(q) ||
-            s.album.toLowerCase().contains(q))
+        .where(
+          (s) =>
+              s.title.toLowerCase().contains(q) ||
+              s.artist.toLowerCase().contains(q) ||
+              s.album.toLowerCase().contains(q),
+        )
         .toList();
   }
 }

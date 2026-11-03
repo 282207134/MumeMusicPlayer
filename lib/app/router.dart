@@ -8,6 +8,7 @@ import '../features/home/recently_played_screen.dart';
 import '../features/onboarding/splash_screen.dart';
 import '../features/onboarding/walkthrough_screen.dart';
 import '../features/player/player_screen.dart';
+import '../features/playlist/add_songs_screen.dart';
 import '../features/playlist/add_to_playlist_screen.dart';
 import '../features/playlist/new_playlist_screen.dart';
 import '../features/playlist/playlist_details_screen.dart';
@@ -49,6 +50,7 @@ abstract final class Routes {
   static const playlist = '/playlist';
   static const newPlaylist = '/playlists/new';
   static const addToPlaylist = '/playlists/pick';
+  static const addSongs = '/playlists/songs';
   static const notification = '/settings/notification';
   static const language = '/settings/language';
   static const shareApp = '/settings/share';
@@ -73,12 +75,18 @@ abstract final class AppRouter {
       Routes.splash => _page(const SplashScreen(), settings),
       Routes.walkthrough => _page(const WalkthroughScreen(), settings),
       Routes.home => _page(const RootShell(), settings),
-      Routes.favorites =>
-        _page(const RootShell(initialTab: ShellTab.favorites), settings),
-      Routes.playlists =>
-        _page(const RootShell(initialTab: ShellTab.playlists), settings),
-      Routes.settings =>
-        _page(const RootShell(initialTab: ShellTab.settings), settings),
+      Routes.favorites => _page(
+        const RootShell(initialTab: ShellTab.favorites),
+        settings,
+      ),
+      Routes.playlists => _page(
+        const RootShell(initialTab: ShellTab.playlists),
+        settings,
+      ),
+      Routes.settings => _page(
+        const RootShell(initialTab: ShellTab.settings),
+        settings,
+      ),
       Routes.search => _page(const SearchScreen(), settings),
       Routes.player => _page(const PlayerScreen(), settings),
       Routes.lyrics => _page(const LyricsScreen(), settings),
@@ -87,11 +95,20 @@ abstract final class AppRouter {
       Routes.album => _page(AlbumDetailsScreen(albumId: id), settings),
       Routes.folder => _page(FolderDetailsScreen(folderId: id), settings),
       Routes.playlist => _page(PlaylistDetailsScreen(playlistId: id), settings),
-      Routes.newPlaylist =>
-        _page(NewPlaylistScreen(playlistId: args is MediaArgs ? args.id : null),
-            settings),
-      Routes.addToPlaylist =>
-        _page(AddToPlaylistScreen(songId: id), settings),
+      Routes.newPlaylist => _page(
+        NewPlaylistScreen(playlistId: args is MediaArgs ? args.id : null),
+        settings,
+      ),
+      Routes.addToPlaylist => _page(
+        AddToPlaylistScreen(
+          songId: id,
+          songIds: args is MediaArgs && args.extra != null
+              ? args.extra!.split(',')
+              : const [],
+        ),
+        settings,
+      ),
+      Routes.addSongs => _page(AddSongsScreen(playlistId: id), settings),
       Routes.notification => _page(const NotificationScreen(), settings),
       Routes.language => _page(const LanguageScreen(), settings),
       Routes.shareApp => _page(const ShareAppScreen(), settings),
@@ -100,8 +117,10 @@ abstract final class AppRouter {
       Routes.paymentMethod => _page(const PaymentMethodScreen(), settings),
       Routes.cardForm => _page(const CardFormScreen(), settings),
       Routes.reviewSummary => _page(const ReviewSummaryScreen(), settings),
-      Routes.subscriptionDone =>
-        _page(const SubscriptionSuccessScreen(), settings),
+      Routes.subscriptionDone => _page(
+        const SubscriptionSuccessScreen(),
+        settings,
+      ),
       _ => _page(_UnknownRoute(name: name), settings),
     };
   }
@@ -113,7 +132,6 @@ class _UnknownRoute extends StatelessWidget {
   final String? name;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: Center(child: Text('No route named ${name ?? '?'}')),
-      );
+  Widget build(BuildContext context) =>
+      Scaffold(body: Center(child: Text('No route named ${name ?? '?'}')));
 }

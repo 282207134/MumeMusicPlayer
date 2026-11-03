@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
 import '../../app/router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimens.dart';
+import '../../app/theme/app_theme.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/widgets/app_logo.dart';
 
@@ -45,33 +47,37 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
+        children: [
+          // Wordmark sits a hair above the optical centre, spinner at 80% height.
+          Align(
+            alignment: const Alignment(0, -0.06),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 const AppLogo(size: 64, badge: true),
                 const SizedBox(width: Insets.gapLg),
                 Text(
                   'Mume',
-                  style: AppTypography.heading(AppTypography.h1 * 0.75,
-                      color: AppColors.grey900),
+                  style: AppTypography.heading(
+                    AppTypography.h1 * 0.75,
+                    color: context.inkPrimary,
+                  ),
                 ),
               ],
             ),
-            const Spacer(flex: 3),
-            AnimatedBuilder(
+          ),
+          Align(
+            alignment: const Alignment(0, 0.6),
+            child: AnimatedBuilder(
               animation: _spinner,
               builder: (context, _) => Transform.rotate(
-                angle: _spinner.value * 2 * 3.14159,
+                angle: _spinner.value * math.pi * 2,
                 child: const _DotSpinner(),
               ),
             ),
-            const SizedBox(height: Insets.gap2xl * 2),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -90,7 +96,7 @@ class _DotSpinner extends StatelessWidget {
           for (var i = 0; i < 8; i++)
             Positioned.fill(
               child: Transform.rotate(
-                angle: i * 3.14159 / 4,
+                angle: i * math.pi / 4,
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: Container(

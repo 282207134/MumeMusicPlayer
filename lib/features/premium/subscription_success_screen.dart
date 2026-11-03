@@ -35,8 +35,9 @@ class SubscriptionSuccessScreen extends StatelessWidget {
     return DateTime(now.year, now.month + plan.months, now.day);
   }
 
-  void _goHome(BuildContext context) => Navigator.of(context)
-      .pushNamedAndRemoveUntil(Routes.home, (route) => false);
+  void _goHome(BuildContext context) =>
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil(Routes.home, (route) => false);
 
   Future<void> _showReceipt(BuildContext context, CheckoutReceipt receipt) {
     return showMumeSheet<void>(
@@ -50,8 +51,12 @@ class SubscriptionSuccessScreen extends StatelessWidget {
           _line(ctx, 'Ordered on', formatCheckoutDate(receipt.orderedOn)),
           if (receipt.promoCode != null)
             _line(ctx, 'Promo', receipt.promoCode!),
-          _line(ctx, 'Paid today', receipt.paidLabel,
-              valueColor: AppColors.primary),
+          _line(
+            ctx,
+            'Paid today',
+            receipt.paidLabel,
+            valueColor: AppColors.primary,
+          ),
           OptionTile(
             icon: Icons.close_rounded,
             label: 'Close',
@@ -75,8 +80,10 @@ class SubscriptionSuccessScreen extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: AppTypography.body(AppTypography.bodyXLarge,
-                  color: context.inkMuted),
+              style: AppTypography.body(
+                AppTypography.bodyXLarge,
+                color: context.inkMuted,
+              ),
             ),
           ),
           Text(
@@ -125,15 +132,19 @@ class SubscriptionSuccessScreen extends StatelessWidget {
           Text(
             'Subscription Successful!',
             textAlign: TextAlign.center,
-            style: AppTypography.heading(AppTypography.h3,
-                color: context.inkPrimary),
+            style: AppTypography.heading(
+              AppTypography.h3,
+              color: context.inkPrimary,
+            ),
           ),
           const SizedBox(height: Insets.gapMd),
           Text(
             'Premium is now unlocked on this device.\nEnjoy ad-free listening in the best audio quality.',
             textAlign: TextAlign.center,
-            style: AppTypography.body(AppTypography.bodyXLarge,
-                color: context.inkMuted),
+            style: AppTypography.body(
+              AppTypography.bodyXLarge,
+              color: context.inkMuted,
+            ),
           ),
           const SizedBox(height: Insets.gap2xl),
           Container(
@@ -151,8 +162,10 @@ class SubscriptionSuccessScreen extends StatelessWidget {
                   children: [
                     Text(
                       plan.priceLabel,
-                      style: AppTypography.heading(AppTypography.h2,
-                          color: AppColors.primary),
+                      style: AppTypography.heading(
+                        AppTypography.h2,
+                        color: AppColors.primary,
+                      ),
                     ),
                     const SizedBox(width: Insets.gapSm),
                     Flexible(
@@ -204,7 +217,9 @@ class _SuccessBadge extends StatelessWidget {
             width: 168,
             height: 168,
             decoration: const BoxDecoration(
-                shape: BoxShape.circle, color: AppColors.bgGreen),
+              shape: BoxShape.circle,
+              color: AppColors.bgGreen,
+            ),
           ),
           Container(
             width: 124,
@@ -226,11 +241,31 @@ class _SuccessBadge extends StatelessWidget {
             ),
           ),
           const Icon(Icons.check_rounded, size: 62, color: AppColors.white),
-          const Positioned(top: 18, left: 34, child: _Speck(14, AppColors.primary)),
-          const Positioned(top: 40, right: 26, child: _Speck(10, AppColors.success)),
-          const Positioned(bottom: 40, left: 20, child: _Speck(9, AppColors.success)),
-          const Positioned(bottom: 16, right: 44, child: _Speck(13, AppColors.primary)),
-          const Positioned(top: 4, right: 84, child: _Speck(6, AppColors.secondary)),
+          const Positioned(
+            top: 18,
+            left: 34,
+            child: _Speck(14, AppColors.primary),
+          ),
+          const Positioned(
+            top: 40,
+            right: 26,
+            child: _Speck(10, AppColors.success),
+          ),
+          const Positioned(
+            bottom: 40,
+            left: 20,
+            child: _Speck(9, AppColors.success),
+          ),
+          const Positioned(
+            bottom: 16,
+            right: 44,
+            child: _Speck(13, AppColors.primary),
+          ),
+          const Positioned(
+            top: 4,
+            right: 84,
+            child: _Speck(6, AppColors.secondary),
+          ),
         ],
       ),
     );
@@ -245,8 +280,8 @@ class _Speck extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+  );
 }

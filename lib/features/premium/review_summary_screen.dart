@@ -37,8 +37,7 @@ class CheckoutReceipt {
 
   PremiumPlan get plan => selection.plan;
   String get paidLabel => '\$${paid.toStringAsFixed(2)}';
-  String get reference =>
-      'MUME-${orderedOn.millisecondsSinceEpoch % 1000000}';
+  String get reference => 'MUME-${orderedOn.millisecondsSinceEpoch % 1000000}';
 }
 
 /// `35_Review Summary` — order breakdown, payment swap and promo code.
@@ -53,8 +52,10 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
   static const _promoCode = 'MUME10';
 
   final _promo = TextEditingController();
-  PaymentSelection _selection =
-      const PaymentSelection(planId: 'monthly', kind: PaymentMethodKind.googlePay);
+  PaymentSelection _selection = const PaymentSelection(
+    planId: 'monthly',
+    kind: PaymentMethodKind.googlePay,
+  );
   String? _appliedCode;
   String? _promoError;
   bool _argsRead = false;
@@ -120,15 +121,14 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
       topBar: const PageTopBar(title: 'Review Summary'),
       bottomBar: Column(
         children: [
-          PrimaryPillButton(
-            label: 'Confirm & Pay',
-            onPressed: _pay,
-          ),
+          PrimaryPillButton(label: 'Confirm & Pay', onPressed: _pay),
           const SizedBox(height: Insets.gapMd),
           Text(
             'You will be charged \$${_total.toStringAsFixed(2)} today.',
-            style: AppTypography.body(AppTypography.bodyMedium,
-                color: context.inkSoft),
+            style: AppTypography.body(
+              AppTypography.bodyMedium,
+              color: context.inkSoft,
+            ),
           ),
         ],
       ),
@@ -167,7 +167,9 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
           ),
           _Panel(
             padding: const EdgeInsets.symmetric(
-                horizontal: Insets.gapLg, vertical: Insets.gapSm),
+              horizontal: Insets.gapLg,
+              vertical: Insets.gapSm,
+            ),
             children: [
               Row(
                 children: [
@@ -219,31 +221,37 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                 ),
               ),
               const SizedBox(width: Insets.gapMd),
-              _appliedCode == null
-                  ? PrimaryPillButton(
-                      label: 'Apply',
-                      height: 54,
-                      expanded: false,
-                      onPressed: _applyPromo,
-                    )
-                  : SoftPillButton(
-                      label: 'Remove',
-                      icon: Icons.remove_circle_outline_rounded,
-                      height: 54,
-                      color: AppColors.success,
-                      onPressed: () => setState(() {
-                        _appliedCode = null;
-                        _promoError = null;
-                        _promo.clear();
-                      }),
-                    ),
+              // The pill buttons lay their label out with a flex Row, so they
+              // need a bounded width next to the expanded text field.
+              SizedBox(
+                width: 150,
+                child: _appliedCode == null
+                    ? PrimaryPillButton(
+                        label: 'Apply',
+                        height: 54,
+                        onPressed: _applyPromo,
+                      )
+                    : SoftPillButton(
+                        label: 'Remove',
+                        icon: Icons.remove_circle_outline_rounded,
+                        height: 54,
+                        color: AppColors.success,
+                        onPressed: () => setState(() {
+                          _appliedCode = null;
+                          _promoError = null;
+                          _promo.clear();
+                        }),
+                      ),
+              ),
             ],
           ),
           const SizedBox(height: Insets.gapMd),
           Text(
             'Try $_promoCode for 10% off your first billing term.',
-            style: AppTypography.body(AppTypography.bodySmall,
-                color: context.inkSoft),
+            style: AppTypography.body(
+              AppTypography.bodySmall,
+              color: context.inkSoft,
+            ),
           ),
           const SizedBox(height: Insets.gap2xl),
         ],
@@ -257,7 +265,9 @@ class _Panel extends StatelessWidget {
   const _Panel({
     required this.children,
     this.padding = const EdgeInsets.symmetric(
-        horizontal: Insets.gapXl, vertical: Insets.gapLg),
+      horizontal: Insets.gapXl,
+      vertical: Insets.gapLg,
+    ),
   });
 
   final List<Widget> children;

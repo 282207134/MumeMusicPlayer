@@ -19,23 +19,22 @@ abstract final class AppTypography {
   static const bodyXSmall = 10.0;
 
   static TextStyle heading(double size, {Color? color}) => TextStyle(
-        fontFamily: fontFamily,
-        fontSize: size,
-        height: 1.2,
-        fontWeight: FontWeight.w700,
-        color: color,
-      );
+    fontFamily: fontFamily,
+    fontSize: size,
+    height: 1.2,
+    fontWeight: FontWeight.w700,
+    color: color,
+  );
 
   static TextStyle body(
     double size, {
     FontWeight weight = FontWeight.w400,
     Color? color,
-  }) =>
-      TextStyle(
-        fontFamily: fontFamily,
-        fontSize: size,
-        height: 1.35,
-        fontWeight: weight,
-        color: color,
-      );
+  }) => TextStyle(
+    fontFamily: fontFamily,
+    fontSize: size,
+    height: 1.35,
+    fontWeight: weight,
+    color: color,
+  );
 }

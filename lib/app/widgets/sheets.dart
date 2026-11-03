@@ -47,20 +47,30 @@ class MumeSheet extends StatelessWidget {
             if (title != null)
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                    Insets.page, 0, Insets.page, Insets.gapMd),
+                  Insets.page,
+                  0,
+                  Insets.page,
+                  Insets.gapMd,
+                ),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     title!,
-                    style: AppTypography.heading(AppTypography.h5,
-                        color: context.inkPrimary),
+                    style: AppTypography.heading(
+                      AppTypography.h5,
+                      color: context.inkPrimary,
+                    ),
                   ),
                 ),
               ),
             Flexible(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(
-                    Insets.page, 0, Insets.page, Insets.gapXl),
+                  Insets.page,
+                  0,
+                  Insets.page,
+                  Insets.gapXl,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: children,
@@ -118,15 +128,19 @@ class SongSheetHeader extends StatelessWidget {
                   subtitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.body(AppTypography.bodyMedium,
-                      color: context.inkMuted),
+                  style: AppTypography.body(
+                    AppTypography.bodyMedium,
+                    color: context.inkMuted,
+                  ),
                 ),
               ],
             ),
           ),
           if (onFavorite != null)
             GhostIconButton(
-              icon: favorited ? Icons.favorite_rounded : Icons.favorite_outline_rounded,
+              icon: favorited
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_outline_rounded,
               color: favorited ? AppColors.primary : null,
               onPressed: onFavorite,
               tooltip: 'Favorite',
@@ -177,22 +191,27 @@ Future<bool> confirmDialog(
             Text(
               title,
               textAlign: TextAlign.center,
-              style: AppTypography.heading(AppTypography.h5,
-                  color: ctx.inkPrimary),
+              style: AppTypography.heading(
+                AppTypography.h5,
+                color: ctx.inkPrimary,
+              ),
             ),
             const SizedBox(height: Insets.gapMd),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTypography.body(AppTypography.bodyLarge,
-                  color: ctx.inkMuted),
+              style: AppTypography.body(
+                AppTypography.bodyLarge,
+                color: ctx.inkMuted,
+              ),
             ),
             const SizedBox(height: Insets.gapXl),
             PrimaryPillButton(
               label: confirmLabel,
               height: 52,
-              gradient:
-                  destructive ? const [AppColors.error, AppColors.error] : AppColors.gradientOrange,
+              gradient: destructive
+                  ? const [AppColors.error, AppColors.error]
+                  : AppColors.gradientOrange,
               onPressed: () => Navigator.of(ctx).pop(true),
             ),
             const SizedBox(height: Insets.gapMd),
